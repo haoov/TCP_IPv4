@@ -12,7 +12,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <string.h>
+#include <cstring>
+#include <fcntl.h>
 
 namespace ft_irc {
 
@@ -24,6 +25,7 @@ namespace ft_irc {
 
 			Socket &operator=(const Socket &);
 
+			void setNonBlock();
 			void close();
 			int fd() const throw();
 	

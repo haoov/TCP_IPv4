@@ -12,7 +12,6 @@
 #include "ASocket.hpp"
 #include <sys/types.h>
 #include <netdb.h>
-#include <cstring>
 
 namespace ft_irc {
 	

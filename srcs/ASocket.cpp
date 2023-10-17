@@ -37,3 +37,19 @@ int ASocket::send(std::string &msg) {
 		throw Error("send error");
 	return nb;
 }
+
+int ASocket::receive(int flags) {
+	int nb;
+	char buf[m_rdsize + 1];
+	m_rdbuf.clear();
+	if ((nb = ::recv(m_fd, buf, m_rdsize, flags)) == -1) {
+		throw Error("recv error");
+	}
+	buf[nb] = '\0';
+	m_rdbuf += buf;
+	return nb;
+}
+
+std::string ASocket::rdbuf() const throw() {
+	return m_rdbuf;
+}

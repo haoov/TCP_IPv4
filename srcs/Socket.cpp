@@ -39,6 +39,12 @@ int Socket::fd() const throw() {
 	return (m_fd);
 }
 
+void Socket::setNonBlock() {
+	if (fcntl(m_fd, O_NONBLOCK) == -1) {
+		throw Error("fcntl error");
+	}
+}
+
 /*------------------------------------*/
 /*              Exception             */
 /*------------------------------------*/

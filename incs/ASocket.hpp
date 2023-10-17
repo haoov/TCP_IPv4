@@ -6,7 +6,6 @@
 #define ASOCKET_HPP
 
 #include "Socket.hpp"
-#include <cstring>
 
 namespace ft_irc {
 
@@ -19,10 +18,15 @@ namespace ft_irc {
 			ASocket &operator=(const ASocket &);
 
 			int send(std::string &);
-	
+			int receive(int = 0);
+
+			std::string rdbuf() const throw();
 		protected :
 	
 		private :
+			std::string m_rdbuf;
+			std::string m_wrbuf;
+			static const size_t m_rdsize = 1024;
 	};
 }
 
