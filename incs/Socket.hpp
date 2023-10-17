@@ -12,13 +12,17 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string.h>
 
 namespace ft_irc {
 
 	class Socket {
 		public :
 			Socket();
+			Socket(const Socket &);
 			virtual ~Socket();
+
+			Socket &operator=(const Socket &);
 
 			void close();
 			int fd() const throw();

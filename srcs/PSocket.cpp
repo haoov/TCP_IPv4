@@ -23,6 +23,7 @@ PSocket::~PSocket() {}
 
 PSocket &PSocket::operator=(const PSocket &other) {
 	m_fd = other.fd();
+	::memcpy(&m_addr, &other.m_addr, sizeof(other.m_addr));
 	return *this;
 }
 

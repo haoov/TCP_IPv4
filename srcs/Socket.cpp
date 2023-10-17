@@ -1,4 +1,4 @@
-#include "../incs/Socket.hpp"
+#include "Socket.hpp"
 
 using namespace ft_irc;
 
@@ -8,8 +8,22 @@ using namespace ft_irc;
 
 Socket::Socket() : m_fd(-1) {}
 
+Socket::Socket(const Socket &other) {
+	*this = other;
+}
+
 Socket::~Socket() {
 	this->close();
+}
+
+/*------------------------------------*/
+/*             Operators              */
+/*------------------------------------*/
+
+Socket &Socket::operator=(const Socket &other) {
+	m_fd = other.m_fd;
+	::memcpy(&m_addr, &other.m_addr, sizeof(other.m_addr));
+	return *this;
 }
 
 /*------------------------------------*/

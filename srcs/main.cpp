@@ -1,11 +1,13 @@
 #include "../incs/PSocket.hpp"
 #include "../incs/ASocket.hpp"
+#include <sys/select.h>
+#include <fcntl.h>
 
 using namespace ft_irc;
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	if (argc < 1)
+	if (argc < 2)
 		return -1;
 
 	static_cast<void>(argv);
@@ -20,13 +22,16 @@ int main(int argc, char *argv[]) {
 			return -1;
 		LstSocket.bind(res->ai_addr);
 		LstSocket.listen();
-		ASocket *connexion = LstSocket.accept();
-		std::string msg("Hello");
-		connexion->send(msg);
-		std::cout << "New connexion established" << std::endl;
-		static_cast<void>(connexion);
+		setsockopt(LstSocket.fd(), SOL_SOCKET, SO_REUSEADDR, 0, sizeof(int));
+		fcntl(LstSocket.fd(), O_NONBLOCK);
+		ASocket *TcpSocket = LstSocket.accept();
+		string msg("Welcome to my ft_irc project\n");
+		TcpSocket->send(msg);
+		while (1) {
+		}
 	}
 	catch (Error &e) {
 		std::cout << e.what() << std::endl;
 	}
+	return 0;
 }

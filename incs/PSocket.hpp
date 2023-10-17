@@ -31,7 +31,7 @@ namespace ft_irc {
 		protected :
 	
 		private :
-			//max len for the connexion queue
+			//Max length for the connexion queue
 			static const int m_backlog = 5;
 	};
 }
