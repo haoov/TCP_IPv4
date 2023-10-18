@@ -6,6 +6,7 @@
 #define ASOCKET_HPP
 
 #include "Socket.hpp"
+#include <errno.h>
 
 namespace net {
 
@@ -17,7 +18,7 @@ namespace net {
 
 			ASocket(int, sockaddr);
 			ASocket(const ASocket &);
-			~ASocket();
+			~ASocket() throw();
 	
 			/*------------------------------------*/
 			/*              Operators             */
@@ -30,11 +31,10 @@ namespace net {
 			/*------------------------------------*/
 
 			//write the content of m_wrbuf on the socket
-			int send();
+			bool send();
 
 			//read m_rdsize bits from the socket to m_rdbuf
-			int receive(int = 0);
-			std::string rdbuf() const throw();
+			bool receive(int = 0);
 
 		private :
 			//reading buffer

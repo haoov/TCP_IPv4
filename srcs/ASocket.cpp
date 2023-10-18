@@ -15,7 +15,7 @@ ASocket::ASocket(const ASocket &other) {
 	*this = other;
 }
 
-ASocket::~ASocket() {}
+ASocket::~ASocket() throw() {}
 
 /*------------------------------------*/
 /*              Operators             */
@@ -31,32 +31,31 @@ ASocket &ASocket::operator=(const ASocket &other) {
 /*               Methods              */
 /*------------------------------------*/
 
-int ASocket::send() {
-	int nb = 0;
+bool ASocket::send() {
+	int nb;
 	if (this->isWriteable()) {
 		if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
 			if (errno == EAGAIN)
-				return nb;
+				return false;
 			throw Error("send error");
 		}
 		m_writeable = false;
 	}
 	m_wrbuf.clear();
-	return nb;
+	return true;
 }
 
-int ASocket::receive(int flags) {
-	int nb;
-	char buf[m_rdsize + 1];
-	m_rdbuf.clear();
-	if ((nb = ::recv(m_fd, buf, m_rdsize, flags)) == -1) {
-		throw Error("recv error");
+bool ASocket::receive(int flags) {
+	if (this->isReadable()) {
+		int nb;
+		char buf[m_rdsize + 1];
+		if ((nb = ::recv(m_fd, buf, m_rdsize, flags)) == -1) {
+			if (errno == EAGAIN)
+				return false;
+			throw Error("recv error");
+		}
+		buf[nb] = '\0';
+		m_rdbuf += buf;
 	}
-	buf[nb] = '\0';
-	m_rdbuf += buf;
-	return nb;
-}
-
-std::string ASocket::rdbuf() const throw() {
-	return m_rdbuf;
+	return true;
 }

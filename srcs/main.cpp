@@ -1,8 +1,8 @@
-#include "Server.hpp"
 #include <errno.h>
 #include <cstdio>
+#include "PSocket.hpp"
 
-using namespace ft_irc;
+using namespace net;
 using namespace std;
 
 int main(int argc, char *argv[]) {
