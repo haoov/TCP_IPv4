@@ -59,3 +59,7 @@ bool ASocket::receive(int flags) {
 	}
 	return true;
 }
+
+void ASocket::write(std::string &msg) throw() {
+	m_wrbuf += msg;
+}

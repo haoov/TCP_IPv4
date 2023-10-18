@@ -36,6 +36,9 @@ namespace net {
 			//read m_rdsize bits from the socket to m_rdbuf
 			bool receive(int = 0);
 
+			//write the msg to m_wrbuf
+			void write(std::string &) throw();
+
 		private :
 			//reading buffer
 			std::string m_rdbuf;
