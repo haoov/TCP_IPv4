@@ -9,10 +9,12 @@
 
 namespace ft_irc {
 
-typedef std::map<ASocket*, User> userMap;
-
 	class Server {
 		public :
+			typedef std::map<ASocket*, User> userMap;
+			typedef std::map<int, Socket*> socketMap;
+			typedef enum state {RUNNING,DOWN} e_state;
+			
 			Server(std::string);
 			Server(const Server &);
 			~Server();
@@ -20,12 +22,18 @@ typedef std::map<ASocket*, User> userMap;
 			Server &operator=(const Server &);
 
 			void run();
+			void wait();
 			void addUser();
+			void sendTo(User &, std::string &);
+			void receiveFrom(User &);
+			bool running() const throw();
 		protected :
 	
 		private :
+			e_state m_state;
 			PSocket m_socket;
 			Epoll m_epoll;
+			socketMap m_sockets;
 			userMap m_users;
 	};
 }

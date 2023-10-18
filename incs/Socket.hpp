@@ -26,12 +26,16 @@ namespace ft_irc {
 			Socket &operator=(const Socket &);
 
 			void setNonBlock();
+			void setReadable() throw();
+			void setWriteable() throw();
 			void close();
 			int fd() const throw();
 	
 		protected :
 			int m_fd;
 			sockaddr m_addr;
+			bool m_readable;
+			bool m_writeable;
 	
 		private :
 	};

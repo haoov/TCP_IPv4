@@ -7,17 +7,18 @@ namespace ft_irc {
 
 	class User {
 		public :
-			User(ASocket &);
+			User();
+			User(ASocket *);
 			User(const User &);
 			~User();
 	
 			User &operator=(const User &);
-	
-			ASocket &socket() const throw();
+
+			ASocket *socket() const throw();
 		protected :
 	
 		private :
-			ASocket &m_socket;
+			ASocket *m_socket;
 			std::string m_username;
 			std::string m_nickname;
 	};

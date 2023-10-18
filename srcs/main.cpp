@@ -1,4 +1,6 @@
 #include "Server.hpp"
+#include <errno.h>
+#include <cstdio>
 
 using namespace ft_irc;
 using namespace std;
@@ -14,7 +16,7 @@ int main(int argc, char *argv[]) {
 		ircServer.run();
 	}
 	catch (Error &e) {
-		std::cout << e.what() << std::endl;
+		::perror(e.what());
 	}
 	return 0;
 }

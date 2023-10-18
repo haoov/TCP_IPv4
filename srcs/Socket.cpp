@@ -6,7 +6,7 @@ using namespace ft_irc;
 /*    Constrcutors and destructor     */
 /*------------------------------------*/
 
-Socket::Socket() : m_fd(-1) {}
+Socket::Socket() : m_fd(-1), m_readable(false), m_writeable(false) {}
 
 Socket::Socket(const Socket &other) {
 	*this = other;
@@ -22,7 +22,9 @@ Socket::~Socket() {
 
 Socket &Socket::operator=(const Socket &other) {
 	m_fd = other.m_fd;
-	::memcpy(&m_addr, &other.m_addr, sizeof(other.m_addr));
+	m_addr = other.m_addr;
+	m_readable = other.m_readable;
+	m_writeable = other.m_writeable;
 	return *this;
 }
 
