@@ -11,9 +11,7 @@ int main(int argc, char *argv[]) {
 
 	static_cast<void>(argv);
 	try {
-		std::string port(argv[1]);
-		Server ircServer(port);
-		ircServer.run();
+		
 	}
 	catch (Error &e) {
 		::perror(e.what());

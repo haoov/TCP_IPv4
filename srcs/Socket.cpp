@@ -1,6 +1,6 @@
 #include "Socket.hpp"
 
-using namespace ft_irc;
+using namespace net;
 
 /*------------------------------------*/
 /*    Constrcutors and destructor     */
@@ -12,7 +12,7 @@ Socket::Socket(const Socket &other) {
 	*this = other;
 }
 
-Socket::~Socket() {
+Socket::~Socket() throw() {
 	this->close();
 }
 
@@ -45,6 +45,22 @@ void Socket::setNonBlock() {
 	if (fcntl(m_fd, O_NONBLOCK) == -1) {
 		throw Error("fcntl error");
 	}
+}
+
+void Socket::setReadable() throw() {
+	m_readable = true;
+}
+
+void Socket::setWriteable() throw() {
+	m_writeable = true;
+}
+
+bool Socket::isReadable() const throw() {
+	return m_readable;
+}
+
+bool Socket::isWriteable() const throw() {
+	return m_writeable;
 }
 
 /*------------------------------------*/

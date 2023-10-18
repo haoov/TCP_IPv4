@@ -1,6 +1,6 @@
 #include "../incs/ASocket.hpp"
 
-using namespace ft_irc;
+using namespace net;
 
 /*------------------------------------*/
 /*    Constructors and destructor     */
@@ -31,10 +31,17 @@ ASocket &ASocket::operator=(const ASocket &other) {
 /*               Methods              */
 /*------------------------------------*/
 
-int ASocket::send(std::string &msg) {
-	int nb;
-	if ((nb = ::send(m_fd, msg.c_str(), msg.size(), 0)) == -1)
-		throw Error("send error");
+int ASocket::send() {
+	int nb = 0;
+	if (this->isWriteable()) {
+		if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
+			if (errno == EAGAIN)
+				return nb;
+			throw Error("send error");
+		}
+		m_writeable = false;
+	}
+	m_wrbuf.clear();
 	return nb;
 }
 

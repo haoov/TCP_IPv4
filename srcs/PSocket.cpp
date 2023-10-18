@@ -1,6 +1,6 @@
 #include "../incs/PSocket.hpp"
 
-using namespace ft_irc;
+using namespace net;
 
 /*------------------------------------*/
 /*    Constructors and destructors    */

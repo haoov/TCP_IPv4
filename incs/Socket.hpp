@@ -15,29 +15,54 @@
 #include <cstring>
 #include <fcntl.h>
 
-namespace ft_irc {
+namespace net {
 
 	class Socket {
 		public :
+			/*------------------------------------*/
+			/*    Constructors and destructor     */
+			/*------------------------------------*/
+
 			Socket();
 			Socket(const Socket &);
-			virtual ~Socket();
+			virtual ~Socket() throw();
 
+			/*------------------------------------*/
+			/*              Operators             */
+			/*------------------------------------*/
+		
 			Socket &operator=(const Socket &);
 
+			/*------------------------------------*/
+			/*               Methods              */
+			/*------------------------------------*/
+
+			//set socket in nonblock mode
 			void setNonBlock();
+
+			//set socket as readable
 			void setReadable() throw();
+
+			//set socket as writeable
 			void setWriteable() throw();
+
+			//close socket
 			void close();
-			int fd() const throw();
-	
+
+			//return the socket fd
+			int	fd() const throw();
+
+			//return true if socket is readable
+			bool isReadable() const throw();
+
+			//return true if socket is writeable
+			bool isWriteable() const throw();
+
 		protected :
 			int m_fd;
 			sockaddr m_addr;
 			bool m_readable;
 			bool m_writeable;
-	
-		private :
 	};
 
 	class Error : public std::exception {

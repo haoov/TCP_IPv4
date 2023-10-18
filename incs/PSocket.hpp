@@ -10,24 +10,40 @@
 
 #include "Socket.hpp"
 #include "ASocket.hpp"
-#include <sys/types.h>
 #include <netdb.h>
 
-namespace ft_irc {
+namespace net {
 	
 	class PSocket : public Socket {
 		public :
+			/*------------------------------------*/
+			/*    Constructors and destructor     */
+			/*------------------------------------*/
+
 			PSocket();
 			PSocket(const PSocket &);
 			~PSocket();
 	
+			/*------------------------------------*/
+			/*             Operators              */
+			/*------------------------------------*/
+
 			PSocket &operator=(const PSocket &);
 
+			/*------------------------------------*/
+			/*              Methods               */
+			/*------------------------------------*/
+
+			//bind the socket to the given address
 			void bind(const sockaddr *);
+
+			//set the soket in listening mode awaiting incoming connections
 			void listen();
+
+			/**accept a new connection and returns a pointer to 
+			 * a new active socket representing the connection
+			*/
 			ASocket *accept() const;
-	
-		protected :
 	
 		private :
 			//Max length for the connexion queue
