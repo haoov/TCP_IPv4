@@ -14,15 +14,16 @@ TCP_IPv4::PSocket::PSocket(const TCP_IPv4::PSocket &other) {
 	*this = other;
 }
 
-TCP_IPv4::PSocket::~PSocket() _NOEXCEPT {}
+TCP_IPv4::PSocket::~PSocket() _NOEXCEPT {
+	this->close();
+}
 
 /*------------------------------------*/
 /*             Operators              */
 /*------------------------------------*/
 
 TCP_IPv4::PSocket &TCP_IPv4::PSocket::operator=(const PSocket &other) {
-	m_fd = other.fd();
-	::memcpy(&m_addr, &other.m_addr, sizeof(other.m_addr));
+	Socket::operator=(other);
 	return *this;
 }
 
@@ -33,7 +34,7 @@ TCP_IPv4::PSocket &TCP_IPv4::PSocket::operator=(const PSocket &other) {
 void TCP_IPv4::PSocket::bind(const sockaddr *addr) {
 	if (::bind(m_fd, addr, sizeof(*addr)) == -1)
 		throw TCP_IPv4::Error("bind");
-	::memcpy(&m_addr, addr, sizeof(*addr));
+	m_addr = *addr;
 }
 
 void TCP_IPv4::PSocket::listen() {

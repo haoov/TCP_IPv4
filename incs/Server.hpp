@@ -4,6 +4,7 @@
 #include "defines.hpp"
 #include "PSocket.hpp"
 #include "ASocket.hpp"
+#include "Epoll.hpp"
 #include <map>
 
 namespace TCP_IPv4 {
@@ -13,12 +14,24 @@ namespace TCP_IPv4 {
 			typedef std::map<int, ASocket *> socketMap;
 			typedef enum state {UP,RUNNING,DOWN} e_state;
 
+			/*------------------------------------*/
+			/*    Constructors and destructor     */
+			/*------------------------------------*/
+
 			Server();
 			Server(const Server &);
 			~Server();
 	
+			/*------------------------------------*/
+			/*              Operators             */
+			/*------------------------------------*/
+
 			Server &operator=(const Server &);
 	
+			/*------------------------------------*/
+			/*               Methods              */
+			/*------------------------------------*/
+
 			void start(std::string &);
 			bool isrunning() const _NOEXCEPT;
 			bool isup() const _NOEXCEPT;
@@ -26,8 +39,9 @@ namespace TCP_IPv4 {
 
 		protected :
 			e_state m_state;
-			PSocket m_PSocket;
-			socketMap m_ASockets;
+			PSocket m_passiveSocket;
+			socketMap m_activeSockets;
+			Epoll m_epoll;
 	
 		private :
 	};

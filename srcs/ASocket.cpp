@@ -14,15 +14,18 @@ TCP_IPv4::ASocket::ASocket(const ASocket &other) {
 	*this = other;
 }
 
-TCP_IPv4::ASocket::~ASocket() _NOEXCEPT {}
+TCP_IPv4::ASocket::~ASocket() _NOEXCEPT {
+	this->close();
+}
 
 /*------------------------------------*/
 /*              Operators             */
 /*------------------------------------*/
 
 TCP_IPv4::ASocket &TCP_IPv4::ASocket::operator=(const ASocket &other) {
-	m_fd = other.m_fd;
-	m_addr = other.m_addr;
+	Socket::operator=(other);
+	m_rdbuf = other.m_rdbuf;
+	m_wrbuf = other.m_wrbuf;
 	return *this;
 }
 

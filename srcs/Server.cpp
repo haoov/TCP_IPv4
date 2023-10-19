@@ -18,8 +18,8 @@ TCP_IPv4::Server::~Server() {}
 
 TCP_IPv4::Server &TCP_IPv4::Server::operator=(const Server &other) {
 	m_state = other.m_state;
-	m_PSocket = other.m_PSocket;
-	m_ASockets = other.m_ASockets;
+	m_passiveSocket = other.m_passiveSocket;
+	m_activeSockets = other.m_activeSockets;
 	return *this;
 }
 
@@ -36,14 +36,15 @@ void TCP_IPv4::Server::start(std::string &port) {
 		throw TCP_IPv4::Error("getaddrinfo");
 	while (res != NULL) {
 		try {
-			m_PSocket.bind(res->ai_addr);
+			m_passiveSocket.bind(res->ai_addr);
 		}
 		catch (TCP_IPv4::Error &e) {
 			continue;
 		}
 		break;
 	}
-	m_PSocket.listen();
+	m_passiveSocket.listen();
+	m_epoll.add(&m_passiveSocket, EPOLLIN);
 	m_state = UP;
 }
 

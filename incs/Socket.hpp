@@ -21,13 +21,15 @@ namespace TCP_IPv4 {
 
 	class Socket {
 		public :
+			typedef enum type {NOTYPE,PASSIVE,ACTIVE} e_type;
+
 			/*------------------------------------*/
 			/*    Constructors and destructor     */
 			/*------------------------------------*/
 
 			Socket();
 			Socket(const Socket &);
-			virtual ~Socket() _NOEXCEPT;
+			virtual ~Socket() _NOEXCEPT = 0;
 
 			/*------------------------------------*/
 			/*              Operators             */
@@ -62,9 +64,15 @@ namespace TCP_IPv4 {
 
 		protected :
 			int m_fd;
+
+			//struct storing the address binded to the socket 
 			sockaddr m_addr;
+
 			bool m_readable;
 			bool m_writeable;
+
+		private :
+			e_type m_type;			
 
 		public :
 			/*------------------------------------*/

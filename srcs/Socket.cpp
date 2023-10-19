@@ -5,15 +5,15 @@
 /*    Constrcutors and destructor     */
 /*------------------------------------*/
 
-TCP_IPv4::Socket::Socket() : m_fd(-1), m_readable(false), m_writeable(false) {}
+TCP_IPv4::Socket::Socket() : m_fd(-1), m_readable(false), m_writeable(false), m_type(NOTYPE) {}
 
 TCP_IPv4::Socket::Socket(const Socket &other) {
 	*this = other;
 }
 
-TCP_IPv4::Socket::~Socket() _NOEXCEPT {
+/* TCP_IPv4::Socket::~Socket() _NOEXCEPT {
 	this->close();
-}
+} */
 
 /*------------------------------------*/
 /*             Operators              */
