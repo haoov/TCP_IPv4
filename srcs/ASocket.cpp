@@ -14,9 +14,7 @@ TCP_IPv4::ASocket::ASocket(const ASocket &other) {
 	*this = other;
 }
 
-TCP_IPv4::ASocket::~ASocket() _NOEXCEPT {
-	::close(m_fd);
-}
+TCP_IPv4::ASocket::~ASocket() _NOEXCEPT {}
 
 /*------------------------------------*/
 /*              Operators             */
@@ -63,4 +61,8 @@ bool TCP_IPv4::ASocket::receive(int flags) {
 
 void TCP_IPv4::ASocket::write(std::string &msg) _NOEXCEPT {
 	m_wrbuf += msg;
+}
+
+std::string TCP_IPv4::ASocket::rdbuf() const _NOEXCEPT {
+	return m_rdbuf;
 }

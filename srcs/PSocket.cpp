@@ -14,9 +14,7 @@ TCP_IPv4::PSocket::PSocket(const TCP_IPv4::PSocket &other) {
 	*this = other;
 }
 
-TCP_IPv4::PSocket::~PSocket() _NOEXCEPT {
-	::close(m_fd);
-}
+TCP_IPv4::PSocket::~PSocket() _NOEXCEPT {}
 
 /*------------------------------------*/
 /*             Operators              */

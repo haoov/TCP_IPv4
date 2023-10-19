@@ -42,6 +42,9 @@ namespace TCP_IPv4 {
 			//write the msg to m_wrbuf
 			void write(std::string &) _NOEXCEPT;
 
+			//return the content of m_rdbuf
+			std::string rdbuf() const _NOEXCEPT;
+
 		private :
 			//reading buffer
 			std::string m_rdbuf;
