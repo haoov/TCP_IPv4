@@ -41,7 +41,10 @@ void TCP_IPv4::Server::start(std::string &port) {
 		catch (TCP_IPv4::Error &e) {
 			continue;
 		}
+		break;
 	}
+	m_PSocket.listen();
+	m_state = UP;
 }
 
 bool TCP_IPv4::Server::isrunning() const _NOEXCEPT {
