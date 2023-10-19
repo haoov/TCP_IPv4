@@ -36,7 +36,7 @@ bool TCP_IPv4::ASocket::send() {
 		if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
 			if (errno == EAGAIN)
 				return false;
-			throw IRC::Error("send");
+			throw TCP_IPv4::Error("send");
 		}
 		m_writeable = false;
 	}
@@ -51,7 +51,7 @@ bool TCP_IPv4::ASocket::receive(int flags) {
 		if ((nb = ::recv(m_fd, buf, m_rdsize, flags)) == -1) {
 			if (errno == EAGAIN)
 				return false;
-			throw IRC::Error("recv");
+			throw TCP_IPv4::Error("recv");
 		}
 		buf[nb] = '\0';
 		m_rdbuf += buf;

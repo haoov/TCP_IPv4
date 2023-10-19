@@ -7,17 +7,15 @@
 #include <cstring>
 #include "defines.hpp"
 
-namespace IRC {
+namespace TCP_IPv4 {
 
 	class Error : public std::exception {
 		public :
 			Error(std::string);
 			~Error() _NOEXCEPT;
 			const char *what() const _NOEXCEPT;
-			const std::string &cause() const _NOEXCEPT;
 		private :
 			std::string m_what;
-			std::string m_cause;
 	};
 }
 

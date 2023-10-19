@@ -33,7 +33,7 @@ TCP_IPv4::Socket &TCP_IPv4::Socket::operator=(const Socket &other) {
 
 void TCP_IPv4::Socket::close() {
 	if (::close(m_fd) != 0)
-		throw IRC::Error("close");
+		throw TCP_IPv4::Error("close");
 }
 
 int TCP_IPv4::Socket::fd() const _NOEXCEPT {
@@ -42,7 +42,7 @@ int TCP_IPv4::Socket::fd() const _NOEXCEPT {
 
 void TCP_IPv4::Socket::setNonBlock() {
 	if (fcntl(m_fd, O_NONBLOCK) == -1) {
-		throw IRC::Error("fcntl");
+		throw TCP_IPv4::Error("fcntl");
 	}
 }
 
