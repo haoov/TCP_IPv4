@@ -61,3 +61,9 @@ bool TCP_IPv4::Socket::isReadable() const _NOEXCEPT {
 bool TCP_IPv4::Socket::isWriteable() const _NOEXCEPT {
 	return m_writeable;
 }
+
+/*------------------------------------*/
+/*             Exceptions             */
+/*------------------------------------*/
+
+TCP_IPv4::Socket::Failure::Failure(std::string what) : TCP_IPv4::Error(what) {}

@@ -32,30 +32,30 @@ TCP_IPv4::ASocket &TCP_IPv4::ASocket::operator=(const ASocket &other) {
 
 bool TCP_IPv4::ASocket::send() {
 	int nb;
-	if (this->isWriteable()) {
-		if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
-			if (errno == EAGAIN)
-				return false;
-			throw TCP_IPv4::Error("send");
-		}
-		m_writeable = false;
+	if (!this->isWriteable())
+		throw TCP_IPv4::Socket::Failure("socket is not writeable");
+	if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
+		if (errno == EAGAIN)
+			return false;
+		throw TCP_IPv4::Error("send");
 	}
+	m_writeable = false;
 	m_wrbuf.clear();
 	return true;
 }
 
 bool TCP_IPv4::ASocket::receive(int flags) {
-	if (this->isReadable()) {
-		int nb;
-		char buf[m_rdsize + 1];
-		if ((nb = ::recv(m_fd, buf, m_rdsize, flags)) == -1) {
-			if (errno == EAGAIN)
-				return false;
-			throw TCP_IPv4::Error("recv");
-		}
-		buf[nb] = '\0';
-		m_rdbuf += buf;
+	if (!this->isReadable())
+		throw TCP_IPv4::Socket::Failure("socket is not readable");
+	int nb;
+	char buf[m_rdsize + 1];
+	if ((nb = ::recv(m_fd, buf, m_rdsize, flags)) == -1) {
+		if (errno == EAGAIN)
+			return false;
+		throw TCP_IPv4::Error("recv");
 	}
+	buf[nb] = '\0';
+	m_rdbuf += buf;
 	return true;
 }
 

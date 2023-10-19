@@ -9,6 +9,7 @@
 #define SOCKET_HPP
 
 #include "defines.hpp"
+#include "Error.hpp"
 #include <iostream>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -64,6 +65,16 @@ namespace TCP_IPv4 {
 			sockaddr m_addr;
 			bool m_readable;
 			bool m_writeable;
+
+		public :
+			/*------------------------------------*/
+			/*             Exceptions             */
+			/*------------------------------------*/
+
+			class Failure : public Error {
+				public :
+					Failure(std::string);
+			};
 	};
 }
 
