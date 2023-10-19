@@ -7,7 +7,7 @@
 
 TCP_IPv4::ASocket::ASocket(int fd, sockaddr addr) {
 	m_fd = fd;
-	::memcpy(&m_addr, &addr, sizeof(addr));
+	m_addr = addr;
 }
 
 TCP_IPv4::ASocket::ASocket(const ASocket &other) {
@@ -21,8 +21,8 @@ TCP_IPv4::ASocket::~ASocket() _NOEXCEPT {}
 /*------------------------------------*/
 
 TCP_IPv4::ASocket &TCP_IPv4::ASocket::operator=(const ASocket &other) {
-	m_fd = other.fd();
-	::memcpy(&m_addr, &other.m_addr, sizeof(other.m_addr));
+	m_fd = other.m_fd;
+	m_addr = other.m_addr;
 	return *this;
 }
 

@@ -14,6 +14,7 @@ namespace TCP_IPv4 {
 			Error(std::string);
 			~Error() _NOEXCEPT;
 			const char *what() const _NOEXCEPT;
+			
 		private :
 			std::string m_what;
 	};
