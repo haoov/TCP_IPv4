@@ -1,7 +1,7 @@
 #------------------------------------#
 #               Project              #
 #------------------------------------#
-TARGET		=	test
+TARGET		=	TCP_IPv4.ar
 PROJDIR		=	$(realpath $(CURDIR))
 SRCDIR		=	$(PROJDIR)/srcs
 INCDIR		=	$(PROJDIR)/incs
@@ -28,7 +28,7 @@ DEPS		=	$(patsubst $(SRCDIR)/%,$(DEPDIR)/%,$(SRCS:.cpp=.d))
 all : $(TARGET)
 
 $(TARGET) : $(OBJS)
-	@$(CC) $(CFLAGS) $(INCLUDE) $^ -o $@
+	@ar -rcs $@ $^
 	@echo Linking $@
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp

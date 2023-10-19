@@ -8,6 +8,7 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
+#include "defines.hpp"
 #include <iostream>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -15,7 +16,7 @@
 #include <cstring>
 #include <fcntl.h>
 
-namespace net {
+namespace TCP_IPv4 {
 
 	class Socket {
 		public :
@@ -25,7 +26,7 @@ namespace net {
 
 			Socket();
 			Socket(const Socket &);
-			virtual ~Socket() throw();
+			virtual ~Socket() _NOEXCEPT;
 
 			/*------------------------------------*/
 			/*              Operators             */
@@ -41,36 +42,28 @@ namespace net {
 			void setNonBlock();
 
 			//set socket as readable
-			void setReadable() throw();
+			void setReadable() _NOEXCEPT;
 
 			//set socket as writeable
-			void setWriteable() throw();
+			void setWriteable() _NOEXCEPT;
 
 			//close socket
 			void close();
 
 			//return the socket fd
-			int	fd() const throw();
+			int	fd() const _NOEXCEPT;
 
 			//return true if socket is readable
-			bool isReadable() const throw();
+			bool isReadable() const _NOEXCEPT;
 
 			//return true if socket is writeable
-			bool isWriteable() const throw();
+			bool isWriteable() const _NOEXCEPT;
 
 		protected :
 			int m_fd;
 			sockaddr m_addr;
 			bool m_readable;
 			bool m_writeable;
-	};
-
-	class Error : public std::exception {
-		public :
-			Error(const char *);
-			const char *what() const throw();
-		private :
-			const char *m_msg;
 	};
 }
 

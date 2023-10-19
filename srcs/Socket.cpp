@@ -1,18 +1,17 @@
 #include "Socket.hpp"
-
-using namespace net;
+#include "Error.hpp"
 
 /*------------------------------------*/
 /*    Constrcutors and destructor     */
 /*------------------------------------*/
 
-Socket::Socket() : m_fd(-1), m_readable(false), m_writeable(false) {}
+TCP_IPv4::Socket::Socket() : m_fd(-1), m_readable(false), m_writeable(false) {}
 
-Socket::Socket(const Socket &other) {
+TCP_IPv4::Socket::Socket(const Socket &other) {
 	*this = other;
 }
 
-Socket::~Socket() throw() {
+TCP_IPv4::Socket::~Socket() _NOEXCEPT {
 	this->close();
 }
 
@@ -20,7 +19,7 @@ Socket::~Socket() throw() {
 /*             Operators              */
 /*------------------------------------*/
 
-Socket &Socket::operator=(const Socket &other) {
+TCP_IPv4::Socket &TCP_IPv4::Socket::operator=(const Socket &other) {
 	m_fd = other.m_fd;
 	m_addr = other.m_addr;
 	m_readable = other.m_readable;
@@ -32,43 +31,33 @@ Socket &Socket::operator=(const Socket &other) {
 /*              Methods               */
 /*------------------------------------*/
 
-void Socket::close() {
+void TCP_IPv4::Socket::close() {
 	if (::close(m_fd) != 0)
-		throw Error("close error");
+		throw IRC::Error("close");
 }
 
-int Socket::fd() const throw() {
+int TCP_IPv4::Socket::fd() const _NOEXCEPT {
 	return (m_fd);
 }
 
-void Socket::setNonBlock() {
+void TCP_IPv4::Socket::setNonBlock() {
 	if (fcntl(m_fd, O_NONBLOCK) == -1) {
-		throw Error("fcntl error");
+		throw IRC::Error("fcntl");
 	}
 }
 
-void Socket::setReadable() throw() {
+void TCP_IPv4::Socket::setReadable() _NOEXCEPT {
 	m_readable = true;
 }
 
-void Socket::setWriteable() throw() {
+void TCP_IPv4::Socket::setWriteable() _NOEXCEPT {
 	m_writeable = true;
 }
 
-bool Socket::isReadable() const throw() {
+bool TCP_IPv4::Socket::isReadable() const _NOEXCEPT {
 	return m_readable;
 }
 
-bool Socket::isWriteable() const throw() {
+bool TCP_IPv4::Socket::isWriteable() const _NOEXCEPT {
 	return m_writeable;
-}
-
-/*------------------------------------*/
-/*              Exception             */
-/*------------------------------------*/
-
-Error::Error(const char *msg) : m_msg(msg) {}
-
-const char *Error::what() const throw() {
-	return (m_msg);
 }

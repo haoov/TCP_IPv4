@@ -1,14 +1,17 @@
 /**
  * Class for active sockets using TCP on IPv4
+ * Active sockets are used by clients who initiate 
+ * the connexion for exchanging data.
 */
 
 #ifndef ASOCKET_HPP
 #define ASOCKET_HPP
 
+#include "defines.hpp"
 #include "Socket.hpp"
 #include <errno.h>
 
-namespace net {
+namespace TCP_IPv4 {
 
 	class ASocket : public Socket {
 		public :
@@ -18,7 +21,7 @@ namespace net {
 
 			ASocket(int, sockaddr);
 			ASocket(const ASocket &);
-			~ASocket() throw();
+			~ASocket() _NOEXCEPT;
 	
 			/*------------------------------------*/
 			/*              Operators             */
@@ -37,7 +40,7 @@ namespace net {
 			bool receive(int = 0);
 
 			//write the msg to m_wrbuf
-			void write(std::string &) throw();
+			void write(std::string &) _NOEXCEPT;
 
 		private :
 			//reading buffer

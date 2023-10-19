@@ -8,11 +8,12 @@
 #ifndef PSOCKET_HPP
 #define PSOCKET_HPP
 
+#include "defines.hpp"
 #include "Socket.hpp"
 #include "ASocket.hpp"
 #include <netdb.h>
 
-namespace net {
+namespace TCP_IPv4 {
 	
 	class PSocket : public Socket {
 		public :
@@ -22,7 +23,7 @@ namespace net {
 
 			PSocket();
 			PSocket(const PSocket &);
-			~PSocket();
+			~PSocket() _NOEXCEPT;
 	
 			/*------------------------------------*/
 			/*             Operators              */
