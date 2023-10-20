@@ -1,10 +1,3 @@
-/**
- * Base class for sockets
- * Each port can have a single passive socket binded to it,
- * await­ing in­com­ing con­nec­tions, and mul­ti­ple active sockets,
- * each cor­re­spond­ing to an open con­nec­tion on the port.
-*/
-
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 
@@ -19,6 +12,12 @@
 
 namespace TCP_IPv4 {
 
+	/**
+	 * @brief  * Base virtual class for sockets
+	 * Each port can have a single passive socket binded to it,
+	 * await­ing in­com­ing con­nec­tions, and mul­ti­ple active sockets,
+	 * each cor­re­spond­ing to an open con­nec­tion on the port.
+	*/
 	class Socket {
 		public :
 			typedef enum type {NOTYPE,PASSIVE,ACTIVE} e_type;

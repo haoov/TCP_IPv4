@@ -1,10 +1,12 @@
+
+
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
 #include "defines.hpp"
 #include "PSocket.hpp"
 #include "ASocket.hpp"
-#include "Epoll.hpp"
+#include "SocEvent.hpp"
 #include <map>
 
 namespace TCP_IPv4 {
@@ -41,7 +43,7 @@ namespace TCP_IPv4 {
 			e_state m_state;
 			PSocket m_passiveSocket;
 			socketMap m_activeSockets;
-			Epoll m_epoll;
+			SocEvent m_socEvent;
 	
 		private :
 	};

@@ -11,10 +11,6 @@ TCP_IPv4::Socket::Socket(const Socket &other) {
 	*this = other;
 }
 
-/* TCP_IPv4::Socket::~Socket() _NOEXCEPT {
-	this->close();
-} */
-
 /*------------------------------------*/
 /*             Operators              */
 /*------------------------------------*/

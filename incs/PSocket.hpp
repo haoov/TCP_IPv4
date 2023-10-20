@@ -1,10 +1,3 @@
-/**
- * Class for passive sockets using TCP on IPv4
- * passive sockets are bind to an address and
- * will wait for an incoming connection that
- * will create a new active socket
-*/
-
 #ifndef PSOCKET_HPP
 #define PSOCKET_HPP
 
@@ -15,6 +8,12 @@
 
 namespace TCP_IPv4 {
 	
+	/**
+	 * @brief  * Class for passive sockets using TCP on IPv4
+ 	 * passive sockets are bind to an address and
+ 	 * will wait for an incoming connection that
+ 	 * will create a new active socket
+	*/
 	class PSocket : public Socket {
 		public :
 			/*------------------------------------*/

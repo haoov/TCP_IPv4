@@ -1,5 +1,5 @@
-#ifndef EPOLL_HPP
-#define EPOLL_HPP
+#ifndef SOCEVENT_HPP
+#define SOCEVENT_HPP
 
 #include "defines.hpp"
 #include "Socket.hpp"
@@ -11,16 +11,20 @@
 
 namespace TCP_IPv4 {
 
-	class Epoll {
+	/**
+	 * @brief class to monitor and handle events on sockets 
+	 * using epoll system call
+	*/
+	class SocEvent {
 		public :
 			typedef std::map<int, Socket *> socketMap;
 
 			/*------------------------------------*/
 			/*    Constructors and destructor     */
 			/*------------------------------------*/
-
-			Epoll();
-			~Epoll();
+			
+			SocEvent();
+			~SocEvent();
 
 			/*------------------------------------*/
 			/*               Methods              */
@@ -49,4 +53,4 @@ namespace TCP_IPv4 {
 	};
 }
 
-#endif
+#endif //SOCEVENT_HPP

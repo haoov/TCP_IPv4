@@ -44,7 +44,7 @@ void TCP_IPv4::Server::start(std::string &port) {
 		break;
 	}
 	m_passiveSocket.listen();
-	m_epoll.add(&m_passiveSocket, EPOLLIN);
+	m_socEvent.add(&m_passiveSocket, EPOLLIN);
 	m_state = UP;
 }
 

@@ -1,9 +1,3 @@
-/**
- * Class for active sockets using TCP on IPv4
- * Active sockets are used by clients who initiate 
- * the connexion for exchanging data.
-*/
-
 #ifndef ASOCKET_HPP
 #define ASOCKET_HPP
 
@@ -13,6 +7,11 @@
 
 namespace TCP_IPv4 {
 
+	/**
+	 * @brief Class for active sockets using TCP on IPv4.
+ 	 * Active sockets are used by clients who initiate 
+ 	 * the connexion for exchanging data.
+	*/
 	class ASocket : public Socket {
 		public :
 			/*------------------------------------*/
