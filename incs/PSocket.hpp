@@ -43,7 +43,7 @@ namespace TCP_IPv4 {
 			/**accept a new connection and returns a pointer to 
 			 * a new active socket representing the connection
 			*/
-			ASocket *accept() const;
+			ASocket *accept();
 	
 		private :
 			//Max length for the connexion queue

@@ -42,12 +42,13 @@ void TCP_IPv4::PSocket::listen() {
 		throw TCP_IPv4::Error("listen");
 }
 
-TCP_IPv4::ASocket *TCP_IPv4::PSocket::accept() const {
+TCP_IPv4::ASocket *TCP_IPv4::PSocket::accept() {
 	int fd;
 	sockaddr addr;
 	socklen_t addrlen = sizeof(addr);
 	if ((fd = ::accept(m_fd, &addr, &addrlen)) == -1)
 		throw TCP_IPv4::Error("accept");
 	ASocket *activeSocket = new ASocket(fd, addr);
+	m_readable = false;
 	return activeSocket;
 }

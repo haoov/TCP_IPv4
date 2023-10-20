@@ -27,6 +27,11 @@ DEPS		=	$(patsubst $(SRCDIR)/%,$(DEPDIR)/%,$(SRCS:.cpp=.d))
 #------------------------------------#
 all : $(TARGET)
 
+verbose : modflags all
+
+modflags :
+	$(eval CFLAGS = $(CFLAGS) -DVERBOSE)
+
 $(TARGET) : $(OBJS)
 	@ar -src $@ $^
 	@echo Linking $@
@@ -34,7 +39,7 @@ $(TARGET) : $(OBJS)
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	@mkdir -p $(patsubst $(OBJDIR)/%,$(DEPDIR)/%,$(dir $@))
-	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@ -MMD -MF $(patsubst $(OBJDIR)/%,$(DEPDIR)/%,$(@:.o=.d))
+	@$(CC) $(CFLAGS) $(CUS) $(INCLUDE) -c $< -o $@ -MMD -MF $(patsubst $(OBJDIR)/%,$(DEPDIR)/%,$(@:.o=.d))
 	@echo Building $(notdir $@)
 
 -include $(DEPS)

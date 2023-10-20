@@ -3,6 +3,8 @@
 
 #include <exception>
 
-#define _NOEXCEPT _GLIBCXX_NOTHROW
+# ifndef _NOEXCEPT
+# define _NOEXCEPT _GLIBCXX_NOTHROW
+# endif //_NOEXCEPT
 
-#endif
+#endif //DEFINES_HPP

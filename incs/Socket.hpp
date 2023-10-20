@@ -13,14 +13,13 @@
 namespace TCP_IPv4 {
 
 	/**
-	 * @brief  * Base virtual class for sockets
+	 * @brief Base class for sockets
 	 * Each port can have a single passive socket binded to it,
 	 * await­ing in­com­ing con­nec­tions, and mul­ti­ple active sockets,
 	 * each cor­re­spond­ing to an open con­nec­tion on the port.
 	*/
 	class Socket {
 		public :
-			typedef enum type {NOTYPE,PASSIVE,ACTIVE} e_type;
 
 			/*------------------------------------*/
 			/*    Constructors and destructor     */
@@ -28,7 +27,7 @@ namespace TCP_IPv4 {
 
 			Socket();
 			Socket(const Socket &);
-			virtual ~Socket() _NOEXCEPT = 0;
+			virtual ~Socket() _NOEXCEPT;
 
 			/*------------------------------------*/
 			/*              Operators             */
@@ -68,10 +67,7 @@ namespace TCP_IPv4 {
 			sockaddr m_addr;
 
 			bool m_readable;
-			bool m_writeable;
-
-		private :
-			e_type m_type;			
+			bool m_writeable;		
 
 		public :
 			/*------------------------------------*/

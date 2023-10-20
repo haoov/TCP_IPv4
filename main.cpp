@@ -1,33 +1,39 @@
 #include "TCP_IPv4"
-#include <error.h>
-#include <stdio.h>
+#include <vector>
 
 int main(int argc, char *argv[]) {
 	if (argc < 2)
 		return -1;
 	try {
-		TCP_IPv4::PSocket lstSocket;
-		struct addrinfo hint, *res;
-		::memset(&hint, 0, sizeof(hint));
-		hint.ai_family = AF_INET;
-		hint.ai_socktype = SOCK_STREAM;
-		hint.ai_protocol = IPPROTO_TCP;
-		if (getaddrinfo(NULL, argv[1], &hint, &res) == -1)
-			return (perror("Error: "), -1);
-		lstSocket.bind(res->ai_addr);
-		lstSocket.listen();
-		TCP_IPv4::ASocket *tcpSocket = lstSocket.accept();
-		std::string msg("Salut\n");
-		tcpSocket->setWriteable();
-		tcpSocket->write(msg);
-		tcpSocket->send();
-		while (1) {
-			tcpSocket->setReadable();
-			tcpSocket->receive();
-			std::cout << tcpSocket->rdbuf();
+		TCP_IPv4::Server ircServer("test");
+		ircServer.start(argv[1]);
+		std::vector<TCP_IPv4::ASocket *> actSockets;
+		while (ircServer.isup()) {
+			ircServer.socEvent().wait();
+			if (ircServer.socket().isReadable()) {
+				TCP_IPv4::ASocket *actSocket;
+				actSocket = ircServer.socket().accept();
+				actSockets.insert(actSockets.end(), actSocket);
+				actSocket->setWriteable();
+				std::string msg("hello\n");
+				actSocket->write(msg);
+				actSocket->send();
+				ircServer.socEvent().add(actSocket, EPOLLIN);
+			}
+			else {
+				std::vector<TCP_IPv4::ASocket *>::iterator it = actSockets.begin();
+				for (; it != actSockets.end(); ++it) {
+					if ((*it)->isReadable()) {
+						(*it)->receive();
+						std::cout << (*it)->rdbuf();
+					}
+				}
+			}
 		}
 	}
-	catch (IRC::Error &e) {
-		std::cout << e.what() << ": " << e.cause() << std::endl;
+	catch (TCP_IPv4::Error &e) {
+		std::cout << e.what() << std::endl;
+		return -1;
 	}
+	return 0;
 }

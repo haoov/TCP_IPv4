@@ -20,7 +20,7 @@ namespace TCP_IPv4 {
 			/*    Constructors and destructor     */
 			/*------------------------------------*/
 
-			Server();
+			Server(std::string);
 			Server(const Server &);
 			~Server();
 	
@@ -34,18 +34,24 @@ namespace TCP_IPv4 {
 			/*               Methods              */
 			/*------------------------------------*/
 
-			void start(std::string &);
+			void start(const char *);
 			bool isrunning() const _NOEXCEPT;
 			bool isup() const _NOEXCEPT;
 			bool isdown() const _NOEXCEPT;
 
+			//only for testing
+			SocEvent &socEvent();
+			PSocket &socket();
+
 		protected :
+			std::string m_name;
 			e_state m_state;
 			PSocket m_passiveSocket;
 			socketMap m_activeSockets;
 			SocEvent m_socEvent;
 	
 		private :
+			void setState(e_state) _NOEXCEPT;
 	};
 }
 

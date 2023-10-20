@@ -5,6 +5,7 @@
 #include "./incs/Socket.hpp"
 #include "./incs/PSocket.hpp"
 #include "./incs/ASocket.hpp"
+#include "./incs/Server.hpp"
 #include "./incs/Error.hpp"
 
 #endif
