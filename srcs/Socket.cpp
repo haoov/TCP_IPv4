@@ -39,7 +39,7 @@ int TCP_IPv4::Socket::fd() const _NOEXCEPT {
 }
 
 void TCP_IPv4::Socket::setNonBlock() {
-	if (fcntl(m_fd, O_NONBLOCK) == -1) {
+	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1) {
 		throw TCP_IPv4::Error("fcntl");
 	}
 }

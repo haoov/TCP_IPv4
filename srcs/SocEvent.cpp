@@ -9,7 +9,10 @@ TCP_IPv4::SocEvent::SocEvent() : m_eventNb(0) {
 		throw TCP_IPv4::Error("epoll_create");
 }
 
-TCP_IPv4::SocEvent::~SocEvent() {}
+TCP_IPv4::SocEvent::~SocEvent() {
+	if (::close(m_fd) == -1)
+		throw TCP_IPv4::Error("epoll close");
+}
 
 /*------------------------------------*/
 /*               Methods              */
@@ -26,6 +29,7 @@ void TCP_IPv4::SocEvent::add(PSocket *socket, int events) {
 
 void TCP_IPv4::SocEvent::add(ASocket *socket, int events) {
 	struct epoll_event event;
+	::memset(&event, 0, sizeof(event));
 	event.data.fd = socket->fd();
 	event.events = events | EPOLLET;
 	if (::epoll_ctl(m_fd, EPOLL_CTL_ADD, socket->fd(), &event) == -1)
@@ -37,9 +41,21 @@ void TCP_IPv4::SocEvent::wait() {
 	if ((m_eventNb = ::epoll_wait(m_fd, m_events, m_maxEvents, -1)) == -1)
 		throw TCP_IPv4::Error("epoll_wait");
 	for (int i = 0; i < m_eventNb; ++i) {
-		if (m_events[i].data.fd & EPOLLIN)
+		if (m_events[i].data.fd & EPOLLIN) {
 			m_sockets[m_events[i].data.fd]->setReadable();
-		if (m_events[i].data.fd & EPOLLOUT)
+			#ifdef VERBOSE
+				std::cout	<< "socketfd "
+							<< m_sockets[m_events[i].data.fd]->fd()
+							<< " is ready to read" << std::endl;
+			#endif
+		}
+		if (m_events[i].data.fd & EPOLLOUT) {
 			m_sockets[m_events[i].data.fd]->setWriteable();
+			#ifdef VERBOSE
+				std::cout	<< "socketfd "
+							<< m_sockets[m_events[i].data.fd]->fd()
+							<< " is ready to write" << std::endl;
+			#endif
+		}
 	}
 }

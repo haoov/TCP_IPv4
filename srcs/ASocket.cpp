@@ -52,13 +52,16 @@ bool TCP_IPv4::ASocket::receive(int flags) {
 		throw TCP_IPv4::Socket::Failure("socket is not readable");
 	int nb;
 	char buf[m_rdsize + 1];
-	if ((nb = ::recv(m_fd, buf, m_rdsize, flags)) == -1) {
-		if (errno == EAGAIN)
-			return false;
-		throw TCP_IPv4::Error("recv");
-	}
-	buf[nb] = '\0';
-	m_rdbuf += buf;
+	do {
+		nb = ::recv(m_fd, buf, m_rdsize, flags);
+		if (nb == -1 && errno != EAGAIN)
+				throw TCP_IPv4::Error("recv");
+		else {
+			buf[nb] = '\0';
+			m_rdbuf += buf;
+		}
+	} while (nb > 0);
+	m_readable = false;
 	return true;
 }
 
