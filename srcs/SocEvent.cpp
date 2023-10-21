@@ -41,21 +41,9 @@ void TCP_IPv4::SocEvent::wait() {
 	if ((m_eventNb = ::epoll_wait(m_fd, m_events, m_maxEvents, -1)) == -1)
 		throw TCP_IPv4::Error("epoll_wait");
 	for (int i = 0; i < m_eventNb; ++i) {
-		if (m_events[i].data.fd & EPOLLIN) {
+		if (m_events[i].data.fd & EPOLLIN)
 			m_sockets[m_events[i].data.fd]->setReadable();
-			#ifdef VERBOSE
-				std::cout	<< "socketfd "
-							<< m_sockets[m_events[i].data.fd]->fd()
-							<< " is ready to read" << std::endl;
-			#endif
-		}
-		if (m_events[i].data.fd & EPOLLOUT) {
+		if (m_events[i].data.fd & EPOLLOUT)
 			m_sockets[m_events[i].data.fd]->setWriteable();
-			#ifdef VERBOSE
-				std::cout	<< "socketfd "
-							<< m_sockets[m_events[i].data.fd]->fd()
-							<< " is ready to write" << std::endl;
-			#endif
-		}
 	}
 }
