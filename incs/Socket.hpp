@@ -66,6 +66,7 @@ namespace TCP_IPv4 {
 			//struct storing the address binded to the socket 
 			sockaddr m_addr;
 
+			int m_flags;
 			bool m_readable;
 			bool m_writeable;		
 
