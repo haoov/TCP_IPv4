@@ -36,15 +36,35 @@ namespace TCP_IPv4 {
 			/*               Methods              */
 			/*------------------------------------*/
 
-			//write the content of m_wrbuf on the socket
-			bool send();
+			/**
+			 * @brief send the content of m_wtbuf to m_fd consuming the 
+			 * readable event and clearing the m_wtbuf.
+			 * 
+			 * @return the number of bytes send
+			 * @exception throws a TCP_IPv4::Socket::Failure exception if socket 
+			 * is not writeable or if the connexion on the socket is down.
+			 * @exception throws a TCP_IPv4::Error exception if send fails.
+			*/
+			int send();
 
-			//read m_rdsize bits from the socket to m_rdbuf
-			bool receive(int = 0);
+			/**
+			 * @brief read m_rdsize bytes from m_fd to m_rdbuf as long as
+			 * there is something to read and EAGAIN is not returned. (on a 
+			 * non blocking socket EAGAIN is returned if the operation would 
+			 * nomally block). If no error occured the readable event is consumed.
+			 * 
+			 * @param flags the flags to pass to recv (if not set defaults to 0)
+			 * @return the total number of bytes read
+			 * @exception throws a TCP_IPv4::Socket::Failure exception if socket 
+			 * is not readable or if the connexion on the socket is down.
+			 * @exception throws a TCP_IPv4::Error exception if recv fails.
+			*/
+			int receive(int = 0);
 
 			//write the msg to m_wrbuf
 			void write(std::string &) _NOEXCEPT;
 
+			//return the current connexion state (see defines.h)
 			int connexionState() const _NOEXCEPT;
 
 			//for testing only

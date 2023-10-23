@@ -23,7 +23,6 @@ TCP_IPv4::Server::~Server() {}
 TCP_IPv4::Server &TCP_IPv4::Server::operator=(const Server &other) {
 	m_state = other.m_state;
 	m_passiveSocket = other.m_passiveSocket;
-	m_activeSockets = other.m_activeSockets;
 	return *this;
 }
 
@@ -55,13 +54,8 @@ void TCP_IPv4::Server::start(const char *port) {
 	}
 }
 
-void TCP_IPv4::Server::newConnexion() {
-	ASocket *newActiveSocket = m_passiveSocket.accept();
-	m_activeSockets.insert(m_activeSockets.end(), newActiveSocket);
-	m_socEvent.add(newActiveSocket, EPOLLIN);
-	#ifdef VERBOSE
-	std::cout << "new connexion on socket " << newActiveSocket->fd() << std::endl;
-	#endif
+bool TCP_IPv4::Server::pendingConnection() const _NOEXCEPT {
+	return m_passiveSocket.isReadable();
 }
 
 bool TCP_IPv4::Server::isrunning() const _NOEXCEPT {
@@ -88,14 +82,4 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 		std::cout << " is running";
 	std::cout << std::endl;
 	#endif
-}
-
-//only for testing
-
-TCP_IPv4::SocEvent &TCP_IPv4::Server::socEvent() {
-	return m_socEvent;
-}
-
-TCP_IPv4::PSocket &TCP_IPv4::Server::socket() {
-	return m_passiveSocket;
 }

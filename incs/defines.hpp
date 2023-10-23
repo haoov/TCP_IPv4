@@ -7,7 +7,7 @@
 # define _NOEXCEPT _GLIBCXX_NOTHROW
 # endif //_NOEXCEPT
 
-//states
+//server/connection states
 #define UP		1
 #define RUNNING	2
 #define DOWN	3
