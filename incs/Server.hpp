@@ -7,7 +7,6 @@
 #include "PSocket.hpp"
 #include "ASocket.hpp"
 #include "SocEvent.hpp"
-#include "Connexion.hpp"
 #include <vector>
 
 
