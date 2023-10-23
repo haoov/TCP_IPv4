@@ -8,6 +8,7 @@
 TCP_IPv4::PSocket::PSocket() {
 	if ((m_fd = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
 		throw TCP_IPv4::Error("socket");
+	m_type = PASSIVE;
 }
 
 TCP_IPv4::PSocket::PSocket(const TCP_IPv4::PSocket &other) {
@@ -48,7 +49,7 @@ TCP_IPv4::ASocket *TCP_IPv4::PSocket::accept() {
 	socklen_t addrlen = sizeof(addr);
 	if ((fd = ::accept(m_fd, &addr, &addrlen)) == -1)
 		throw TCP_IPv4::Error("accept");
-	ASocket *activeSocket = new ASocket(fd, addr);
 	m_readable = false;
+	TCP_IPv4::ASocket *activeSocket = new ASocket(fd, addr);
 	return activeSocket;
 }

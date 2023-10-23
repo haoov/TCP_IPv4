@@ -7,15 +7,16 @@
 #include "PSocket.hpp"
 #include "ASocket.hpp"
 #include "SocEvent.hpp"
-#include <map>
+#include "Connexion.hpp"
+#include <vector>
+
+
+typedef std::vector<TCP_IPv4::ASocket *> ASocVec;
 
 namespace TCP_IPv4 {
 
 	class Server {
 		public :
-			typedef std::map<int, ASocket *> socketMap;
-			typedef enum state {UP,RUNNING,DOWN} e_state;
-
 			/*------------------------------------*/
 			/*    Constructors and destructor     */
 			/*------------------------------------*/
@@ -35,23 +36,25 @@ namespace TCP_IPv4 {
 			/*------------------------------------*/
 
 			void start(const char *);
+			void newConnexion();
 			bool isrunning() const _NOEXCEPT;
 			bool isup() const _NOEXCEPT;
 			bool isdown() const _NOEXCEPT;
 
 			//only for testing
+			ASocVec activeSockets() const _NOEXCEPT {return m_activeSockets;}
 			SocEvent &socEvent();
 			PSocket &socket();
 
 		protected :
 			std::string m_name;
-			e_state m_state;
+			int m_state;
 			PSocket m_passiveSocket;
-			socketMap m_activeSockets;
+			ASocVec m_activeSockets;
 			SocEvent m_socEvent;
 	
 		private :
-			void setState(e_state) _NOEXCEPT;
+			void setState(int) _NOEXCEPT;
 	};
 }
 

@@ -5,9 +5,14 @@
 /*    Constructors and destructor     */
 /*------------------------------------*/
 
+TCP_IPv4::ASocket::ASocket() {}
+
 TCP_IPv4::ASocket::ASocket(int fd, sockaddr addr) {
 	m_fd = fd;
 	m_addr = addr;
+	m_type = ACTIVE;
+	m_connexionState = UP;
+	this->setNonBlock();
 }
 
 TCP_IPv4::ASocket::ASocket(const ASocket &other) {
@@ -35,8 +40,10 @@ TCP_IPv4::ASocket &TCP_IPv4::ASocket::operator=(const ASocket &other) {
 
 bool TCP_IPv4::ASocket::send() {
 	int nb;
-	if (!this->isWriteable())
+	if (!m_writeable)
 		throw TCP_IPv4::Socket::Failure("socket is not writeable");
+	if (m_connexionState == DOWN)
+		throw TCP_IPv4::Socket::Failure("connexion is down");
 	if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
 		if (errno == EAGAIN)
 			return false;
@@ -48,14 +55,18 @@ bool TCP_IPv4::ASocket::send() {
 }
 
 bool TCP_IPv4::ASocket::receive(int flags) {
-	if (!this->isReadable())
+	if (!m_readable)
 		throw TCP_IPv4::Socket::Failure("socket is not readable");
+	if (m_connexionState == DOWN)
+		throw TCP_IPv4::Socket::Failure("connexion is down");
 	int nb;
 	char buf[m_rdsize + 1];
 	do {
 		nb = ::recv(m_fd, buf, m_rdsize, flags);
-		if (nb == -1 && errno != EAGAIN)
+		if (nb == -1) {
+			if (errno != EAGAIN)
 				throw TCP_IPv4::Error("recv");
+		}
 		else {
 			buf[nb] = '\0';
 			m_rdbuf += buf;
@@ -69,6 +80,11 @@ void TCP_IPv4::ASocket::write(std::string &msg) _NOEXCEPT {
 	m_wrbuf += msg;
 }
 
+int TCP_IPv4::ASocket::connexionState() const _NOEXCEPT {
+	return m_connexionState;
+}
+
+//for testing only
 std::string TCP_IPv4::ASocket::rdbuf() const _NOEXCEPT {
 	return m_rdbuf;
 }

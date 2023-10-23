@@ -7,7 +7,7 @@
 #include <netdb.h>
 
 namespace TCP_IPv4 {
-	
+
 	/**
 	 * @brief  * Class for passive sockets using TCP on IPv4
  	 * passive sockets are bind to an address and

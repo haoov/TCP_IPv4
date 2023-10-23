@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <fcntl.h>
+#include "SocEvent.hpp"
 
 namespace TCP_IPv4 {
 
@@ -20,6 +21,7 @@ namespace TCP_IPv4 {
 	*/
 	class Socket {
 		public :
+			friend class SocEvent;
 
 			/*------------------------------------*/
 			/*    Constructors and destructor     */
@@ -42,12 +44,6 @@ namespace TCP_IPv4 {
 			//set socket in nonblock mode
 			void setNonBlock();
 
-			//set socket as readable
-			void setReadable() _NOEXCEPT;
-
-			//set socket as writeable
-			void setWriteable() _NOEXCEPT;
-
 			//close socket
 			void close();
 
@@ -68,7 +64,8 @@ namespace TCP_IPv4 {
 
 			int m_flags;
 			bool m_readable;
-			bool m_writeable;		
+			bool m_writeable;
+			int m_type;
 
 		public :
 			/*------------------------------------*/

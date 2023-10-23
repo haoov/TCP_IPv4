@@ -1,4 +1,5 @@
 #include "SocEvent.hpp"
+#include "ASocket.hpp"
 
 /*------------------------------------*/
 /*    Constructors and destructor     */
@@ -18,32 +19,30 @@ TCP_IPv4::SocEvent::~SocEvent() {
 /*               Methods              */
 /*------------------------------------*/
 
-void TCP_IPv4::SocEvent::add(PSocket *socket, int events) {
+void TCP_IPv4::SocEvent::add(Socket *socket, int events) {
 	struct epoll_event event;
 	event.data.fd = socket->fd();
 	event.events = events | EPOLLET;
 	if (::epoll_ctl(m_fd, EPOLL_CTL_ADD, socket->fd(), &event) == -1)
 		throw TCP_IPv4::Error("epoll_ctl");
-	m_sockets[socket->fd()] = static_cast<Socket *>(socket);
-}
-
-void TCP_IPv4::SocEvent::add(ASocket *socket, int events) {
-	struct epoll_event event;
-	::memset(&event, 0, sizeof(event));
-	event.data.fd = socket->fd();
-	event.events = events | EPOLLET;
-	if (::epoll_ctl(m_fd, EPOLL_CTL_ADD, socket->fd(), &event) == -1)
-		throw TCP_IPv4::Error("epoll_ctl");
-	m_sockets[socket->fd()] = static_cast<Socket *>(socket);
+	m_sockets[socket->fd()] = socket;
 }
 
 void TCP_IPv4::SocEvent::wait() {
 	if ((m_eventNb = ::epoll_wait(m_fd, m_events, m_maxEvents, -1)) == -1)
 		throw TCP_IPv4::Error("epoll_wait");
 	for (int i = 0; i < m_eventNb; ++i) {
-		if (m_events[i].data.fd & EPOLLIN)
-			m_sockets[m_events[i].data.fd]->setReadable();
-		if (m_events[i].data.fd & EPOLLOUT)
-			m_sockets[m_events[i].data.fd]->setWriteable();
+		int fd = m_events[i].data.fd;
+		int events = m_events[i].events;
+		if (events & EPOLLIN) {
+			m_sockets[fd]->m_readable = true;
+			#ifdef VERBOSE
+			std::cout << "socketfd " << fd << " is now readable" << std::endl;
+			#endif
+		}
+		if (events & EPOLLOUT)
+			m_sockets[fd]->m_writeable = true;
+		if (events & EPOLLHUP && m_sockets[fd]->m_type == ACTIVE)
+			static_cast<ASocket *>(m_sockets[fd])->m_connexionState = DOWN;
 	}
 }

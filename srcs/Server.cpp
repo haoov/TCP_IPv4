@@ -6,7 +6,7 @@
 
 TCP_IPv4::Server::Server(std::string name) : m_name(name), m_state(DOWN) {
 	#ifdef VERBOSE
-		std::cout << "server " << m_name << " created" << std::endl;
+	std::cout << "server " << m_name << " created" << std::endl;
 	#endif
 }
 
@@ -55,6 +55,15 @@ void TCP_IPv4::Server::start(const char *port) {
 	}
 }
 
+void TCP_IPv4::Server::newConnexion() {
+	ASocket *newActiveSocket = m_passiveSocket.accept();
+	m_activeSockets.insert(m_activeSockets.end(), newActiveSocket);
+	m_socEvent.add(newActiveSocket, EPOLLIN);
+	#ifdef VERBOSE
+	std::cout << "new connexion on socket " << newActiveSocket->fd() << std::endl;
+	#endif
+}
+
 bool TCP_IPv4::Server::isrunning() const _NOEXCEPT {
 	return (m_state == RUNNING);
 }
@@ -67,17 +76,17 @@ bool TCP_IPv4::Server::isdown() const _NOEXCEPT {
 	return (m_state == DOWN);
 }
 
-void TCP_IPv4::Server::setState(e_state newState) _NOEXCEPT {
+void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 	m_state = newState;
 	#ifdef VERBOSE
-		std::cout << "server " << m_name;
-		if (this->isup())
-			std::cout << " is up";
-		if (this->isdown())
-			std::cout << " is down";
-		if (this->isrunning())
-			std::cout << " is running";
-		std::cout << std::endl;
+	std::cout << "server " << m_name;
+	if (this->isup())
+		std::cout << " is up";
+	if (this->isdown())
+		std::cout << " is down";
+	if (this->isrunning())
+		std::cout << " is running";
+	std::cout << std::endl;
 	#endif
 }
 

@@ -3,13 +3,13 @@
 
 #include "defines.hpp"
 #include "Socket.hpp"
-#include "PSocket.hpp"
-#include "ASocket.hpp"
 #include "Error.hpp"
 #include <sys/epoll.h>
 #include <map>
 
 namespace TCP_IPv4 {
+
+	class Socket;
 
 	/**
 	 * @brief class to monitor and handle events on sockets 
@@ -30,11 +30,8 @@ namespace TCP_IPv4 {
 			/*               Methods              */
 			/*------------------------------------*/
 
-			//add a passive socket to the poll
-			void add(PSocket *, int);
-
-			//add an active socket to the poll
-			void add(ASocket *, int);
+			//add a socket to the poll
+			void add(Socket *, int);
 
 			//wait for event to occur an modify the corresponding sockets
 			void wait();

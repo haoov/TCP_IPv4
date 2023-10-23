@@ -3,6 +3,7 @@
 
 #include "defines.hpp"
 #include "Socket.hpp"
+#include "SocEvent.hpp"
 #include <errno.h>
 
 namespace TCP_IPv4 {
@@ -14,10 +15,13 @@ namespace TCP_IPv4 {
 	*/
 	class ASocket : public Socket {
 		public :
+			friend class SocEvent;
+
 			/*------------------------------------*/
 			/*     Constructors and destructor    */
 			/*------------------------------------*/
 
+			ASocket();
 			ASocket(int, sockaddr);
 			ASocket(const ASocket &);
 			~ASocket() _NOEXCEPT;
@@ -41,7 +45,9 @@ namespace TCP_IPv4 {
 			//write the msg to m_wrbuf
 			void write(std::string &) _NOEXCEPT;
 
-			//return the content of m_rdbuf
+			int connexionState() const _NOEXCEPT;
+
+			//for testing only
 			std::string rdbuf() const _NOEXCEPT;
 
 		private :
@@ -53,6 +59,7 @@ namespace TCP_IPv4 {
 
 			//max reading size
 			static const size_t m_rdsize = 1024;
+			int m_connexionState;
 	};
 }
 
