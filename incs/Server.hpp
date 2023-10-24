@@ -22,7 +22,7 @@ namespace TCP_IPv4 {
 
 			Server(std::string);
 			Server(const Server &);
-			~Server();
+			virtual ~Server();
 	
 			/*------------------------------------*/
 			/*              Operators             */
@@ -63,8 +63,7 @@ namespace TCP_IPv4 {
 			int m_state;
 			PSocket m_passiveSocket;
 			SocEvent m_socEvent;
-	
-		private :
+
 			/**
 			 * @brief set the server's current state to the givent value 
 			 * (see defines.h) If in VERBOSE mode print the state 
