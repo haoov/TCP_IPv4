@@ -5,7 +5,7 @@
 /*    Constrcutors and destructor     */
 /*------------------------------------*/
 
-TCP_IPv4::Socket::Socket() : m_fd(-1), m_readable(false), m_writeable(false), m_type(ACTIVE) {}
+TCP_IPv4::Socket::Socket() : m_fd(-1), m_evFlags(0), m_type(ACTIVE) {}
 
 TCP_IPv4::Socket::Socket(const Socket &other) {
 	*this = other;
@@ -21,8 +21,8 @@ TCP_IPv4::Socket &TCP_IPv4::Socket::operator=(const Socket &other) {
 	m_fd = other.m_fd;
 	m_type = other.m_type;
 	m_addr = other.m_addr;
-	m_readable = other.m_readable;
-	m_writeable = other.m_writeable;
+	m_flags = other.m_flags;
+	m_evFlags = other.m_evFlags;
 	return *this;
 }
 
@@ -48,11 +48,11 @@ void TCP_IPv4::Socket::setNonBlock() {
 }
 
 bool TCP_IPv4::Socket::isReadable() const _NOEXCEPT {
-	return m_readable;
+	return (m_evFlags & EPOLLIN);
 }
 
 bool TCP_IPv4::Socket::isWriteable() const _NOEXCEPT {
-	return m_writeable;
+	return (m_evFlags & EPOLLOUT);
 }
 
 /*------------------------------------*/

@@ -7,13 +7,15 @@
 # define _NOEXCEPT _GLIBCXX_NOTHROW
 # endif //_NOEXCEPT
 
-//server/connection states
-#define UP		1
-#define RUNNING	2
-#define DOWN	3
+enum serverState {
+	UP,
+	RUNNING,
+	DOWN
+};
 
-//socket type
-#define ACTIVE	1
-#define PASSIVE	2
+enum socketType {
+	ACTIVE,
+	PASSIVE
+};
 
 #endif //DEFINES_HPP

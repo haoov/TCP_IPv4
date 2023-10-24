@@ -11,8 +11,10 @@ TCP_IPv4::ASocket::ASocket(int fd, sockaddr addr) {
 	m_fd = fd;
 	m_addr = addr;
 	m_type = ACTIVE;
-	m_connexionState = UP;
 	this->setNonBlock();
+	#ifdef VERBOSE
+	std::cout << "new connexion on socket " << fd << std::endl;
+	#endif
 }
 
 TCP_IPv4::ASocket::ASocket(const ASocket &other) {
@@ -40,23 +42,23 @@ TCP_IPv4::ASocket &TCP_IPv4::ASocket::operator=(const ASocket &other) {
 
 int TCP_IPv4::ASocket::send() {
 	int nb;
-	if (!m_writeable)
+	if (!this->isWriteable())
 		throw TCP_IPv4::Socket::Failure("socket is not writeable");
-	if (m_connexionState == DOWN)
+	if (m_evFlags & EPOLLHUP)
 		throw TCP_IPv4::Socket::Failure("connexion is down");
 	if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
 		if (errno != EAGAIN)
 			throw TCP_IPv4::Error("send");
 	}
-	m_writeable = false;
+	m_evFlags &= ~EPOLLOUT;
 	m_wrbuf.clear();
 	return nb;
 }
 
 int TCP_IPv4::ASocket::receive(int flags) {
-	if (!m_readable)
+	if (!this->isReadable())
 		throw TCP_IPv4::Socket::Failure("socket is not readable");
-	if (m_connexionState == DOWN)
+	if (m_evFlags & EPOLLHUP)
 		throw TCP_IPv4::Socket::Failure("connexion is down");
 	int nb;
 	int ret = 0;
@@ -73,16 +75,12 @@ int TCP_IPv4::ASocket::receive(int flags) {
 			ret += nb;
 		}
 	} while (nb > 0);
-	m_readable = false;
+	m_evFlags &= ~EPOLLIN;
 	return ret;
 }
 
 void TCP_IPv4::ASocket::write(std::string &msg) _NOEXCEPT {
 	m_wrbuf += msg;
-}
-
-int TCP_IPv4::ASocket::connexionState() const _NOEXCEPT {
-	return m_connexionState;
 }
 
 //for testing only

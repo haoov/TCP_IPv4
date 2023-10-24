@@ -64,9 +64,6 @@ namespace TCP_IPv4 {
 			//write the msg to m_wrbuf
 			void write(std::string &) _NOEXCEPT;
 
-			//return the current connexion state (see defines.h)
-			int connexionState() const _NOEXCEPT;
-
 			//for testing only
 			std::string rdbuf() const _NOEXCEPT;
 
@@ -79,7 +76,6 @@ namespace TCP_IPv4 {
 
 			//max reading size
 			static const size_t m_rdsize = 1024;
-			int m_connexionState;
 	};
 }
 

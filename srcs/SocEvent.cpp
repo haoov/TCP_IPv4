@@ -35,14 +35,14 @@ void TCP_IPv4::SocEvent::wait() {
 		int fd = m_events[i].data.fd;
 		int events = m_events[i].events;
 		if (events & EPOLLIN) {
-			m_sockets[fd]->m_readable = true;
+			m_sockets[fd]->m_evFlags |= EPOLLIN;
 			#ifdef VERBOSE
 			std::cout << "socketfd " << fd << " is now readable" << std::endl;
 			#endif
 		}
 		if (events & EPOLLOUT)
-			m_sockets[fd]->m_writeable = true;
-		if (events & EPOLLHUP && m_sockets[fd]->m_type == ACTIVE)
-			static_cast<ASocket *>(m_sockets[fd])->m_connexionState = DOWN;
+			m_sockets[fd]->m_evFlags |= EPOLLOUT;
+		if (events & EPOLLHUP)
+			m_sockets[fd]->m_evFlags |= EPOLLHUP;
 	}
 }

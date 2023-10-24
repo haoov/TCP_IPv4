@@ -62,9 +62,11 @@ namespace TCP_IPv4 {
 			//struct storing the address binded to the socket 
 			sockaddr m_addr;
 
+			//fcntl flags
 			int m_flags;
-			bool m_readable;
-			bool m_writeable;
+
+			//epoll flags
+			int m_evFlags;
 			int m_type;
 
 		public :
