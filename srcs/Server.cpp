@@ -57,13 +57,14 @@ void TCP_IPv4::Server::start(const char *port) {
 	}
 }
 
-void TCP_IPv4::Server::newConnection() {
+TCP_IPv4::ASocket &TCP_IPv4::Server::newConnection() {
 	TCP_IPv4::ASocket *newASocket = m_pSocket.accept();
 	#ifdef VERBOSE
 	std::cout << "new connexion on socket " << newASocket->fd() << std::endl;
 	#endif
 	m_aSockets.insert(m_aSockets.end(), newASocket);
 	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
+	return *newASocket;
 }
 
 bool TCP_IPv4::Server::pendingConnection() const _NOEXCEPT {
