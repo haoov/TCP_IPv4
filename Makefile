@@ -45,11 +45,13 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 -include $(DEPS)
 
 clean :
-	rm -rf $(OBJDIR)
-	rm -rf $(DEPDIR)
+	@rm -rf $(OBJDIR)
+	@rm -rf $(DEPDIR)
+	@echo Cleaning $(OBJDIR) $(DEPDIR)
 
 fclean : clean
-	rm -f $(TARGET)
+	@rm -f $(TARGET)
+	@echo Cleaning $(TARGET)
 
 re : fclean all
 

@@ -22,7 +22,7 @@ TCP_IPv4::Server::~Server() {}
 
 TCP_IPv4::Server &TCP_IPv4::Server::operator=(const Server &other) {
 	m_state = other.m_state;
-	m_passiveSocket = other.m_passiveSocket;
+	m_pSocket = other.m_pSocket;
 	return *this;
 }
 
@@ -41,21 +41,41 @@ void TCP_IPv4::Server::start(const char *port) {
 			throw TCP_IPv4::Error("getaddrinfo");
 		while (res != NULL) {
 			try {
-				m_passiveSocket.bind(res->ai_addr);
+				m_pSocket.bind(res->ai_addr);
 			}
 			catch (TCP_IPv4::Error &e) {
 				continue;
 			}
 			break;
 		}
-		m_passiveSocket.listen();
-		m_socEvent.add(&m_passiveSocket, EPOLLIN);
+		m_pSocket.listen();
+		m_socEvent.add(&m_pSocket, EPOLLIN);
 		this->setState(UP);
 	}
 }
 
+void TCP_IPv4::Server::run() {
+	if (!this->isup())
+		throw TCP_IPv4::Server::Failure("server is down");
+	this->setState(RUNNING);
+	while (this->isrunning()) {
+		m_socEvent.wait();
+		if (this->pendingConnection())
+			this->newConnection();
+	}
+}
+
+void TCP_IPv4::Server::newConnection() {
+	TCP_IPv4::ASocket *newASocket = m_pSocket.accept();
+	#ifdef VERBOSE
+	std::cout << "new connexion on socket " << newASocket->fd() << std::endl;
+	#endif
+	m_aSockets.insert(m_aSockets.end(), newASocket);
+	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
+}
+
 bool TCP_IPv4::Server::pendingConnection() const _NOEXCEPT {
-	return m_passiveSocket.isReadable();
+	return m_pSocket.isReadable();
 }
 
 bool TCP_IPv4::Server::isrunning() const _NOEXCEPT {
@@ -70,6 +90,10 @@ bool TCP_IPv4::Server::isdown() const _NOEXCEPT {
 	return (m_state == DOWN);
 }
 
+/*------------------------------------*/
+/*           Private Methods          */
+/*------------------------------------*/
+
 void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 	m_state = newState;
 	#ifdef VERBOSE
@@ -83,3 +107,9 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 	std::cout << std::endl;
 	#endif
 }
+
+/*------------------------------------*/
+/*             Exception              */
+/*------------------------------------*/
+
+TCP_IPv4::Server::Failure::Failure(std::string what) : TCP_IPv4::Error(what) {}

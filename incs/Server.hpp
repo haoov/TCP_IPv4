@@ -9,8 +9,7 @@
 #include "SocEvent.hpp"
 #include <vector>
 
-
-typedef std::vector<TCP_IPv4::ASocket *> ASocVec;
+typedef std::vector<TCP_IPv4::ASocket *> vec_ASocket;
 
 namespace TCP_IPv4 {
 
@@ -37,7 +36,7 @@ namespace TCP_IPv4 {
 			/**
 			 * @brief bind the server's passive socket to the given 
 			 * corresponding port (using TCP protocol and IPv4 familly) 
-			 * then calls listen and adds it to the socEvent handler
+			 * then calls listen and adds it to socEvent handler
 			 * 
 			 * @param port the port on wich the socket should bind and 
 			 * so the port on wich the clients should connect
@@ -45,6 +44,11 @@ namespace TCP_IPv4 {
 			 * system call fails
 			*/
 			void start(const char *);
+
+			virtual void run();
+
+			//accept a new connection and add it to socEvent handler
+			void newConnection();
 
 			//return true if the server can accept a new connection
 			bool pendingConnection() const _NOEXCEPT;
@@ -61,7 +65,8 @@ namespace TCP_IPv4 {
 		protected :
 			std::string m_name;
 			int m_state;
-			PSocket m_passiveSocket;
+			PSocket m_pSocket;
+			vec_ASocket m_aSockets;
 			SocEvent m_socEvent;
 
 			/**
@@ -70,6 +75,16 @@ namespace TCP_IPv4 {
 			 * to standard output
 			*/
 			void setState(int) _NOEXCEPT;
+
+		public :
+			/*------------------------------------*/
+			/*              Exception             */
+			/*------------------------------------*/
+
+			class Failure : public TCP_IPv4::Error {
+				public :
+					Failure(std::string);
+			};
 	};
 }
 
