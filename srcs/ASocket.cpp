@@ -11,7 +11,6 @@ TCP_IPv4::ASocket::ASocket(int fd, sockaddr addr) : TCP_IPv4::Socket() {
 	m_fd = fd;
 	m_addr = addr;
 	m_type = ACTIVE;
-	this->setNonBlock();
 }
 
 TCP_IPv4::ASocket::ASocket(const ASocket &other) : TCP_IPv4::Socket() {

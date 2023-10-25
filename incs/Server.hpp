@@ -45,8 +45,6 @@ namespace TCP_IPv4 {
 			*/
 			void start(const char *);
 
-			virtual void run();
-
 			//accept a new connection and add it to socEvent handler
 			void newConnection();
 

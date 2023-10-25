@@ -14,7 +14,10 @@ TCP_IPv4::Server::Server(const Server &other) {
 	*this = other;
 }
 
-TCP_IPv4::Server::~Server() {}
+TCP_IPv4::Server::~Server() {
+	for (size_t i = 0; i < m_aSockets.size(); ++i)
+		delete m_aSockets[i];
+}
 
 /*------------------------------------*/
 /*             Operators              */
@@ -51,17 +54,6 @@ void TCP_IPv4::Server::start(const char *port) {
 		m_pSocket.listen();
 		m_socEvent.add(&m_pSocket, EPOLLIN);
 		this->setState(UP);
-	}
-}
-
-void TCP_IPv4::Server::run() {
-	if (!this->isup())
-		throw TCP_IPv4::Server::Failure("server is down");
-	this->setState(RUNNING);
-	while (this->isrunning()) {
-		m_socEvent.wait();
-		if (this->pendingConnection())
-			this->newConnection();
 	}
 }
 
