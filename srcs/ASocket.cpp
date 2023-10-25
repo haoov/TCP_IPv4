@@ -11,6 +11,13 @@ TCP_IPv4::ASocket::ASocket(int fd, sockaddr addr) : TCP_IPv4::Socket() {
 	m_fd = fd;
 	m_addr = addr;
 	m_type = ACTIVE;
+	m_evFlags |= EPOLLIN | EPOLLOUT;
+	char host[NI_MAXHOST];
+	char serv[NI_MAXSERV];
+	if (::getnameinfo(&m_addr, sizeof(m_addr), host, sizeof(host), serv, sizeof(serv), NI_NAMEREQD) == -1)
+		throw TCP_IPv4::Error("getnameinfo");
+	m_host = host;
+	m_serv = serv;
 }
 
 TCP_IPv4::ASocket::ASocket(const ASocket &other) : TCP_IPv4::Socket() {
@@ -56,6 +63,7 @@ int TCP_IPv4::ASocket::receive(int flags) {
 		throw TCP_IPv4::Socket::Failure("socket is not readable");
 	if (m_evFlags & EPOLLHUP)
 		throw TCP_IPv4::Socket::Failure("connexion is down");
+	m_rdbuf.clear();
 	int nb;
 	int ret = 0;
 	char buf[m_rdsize + 1];
@@ -79,7 +87,18 @@ void TCP_IPv4::ASocket::write(std::string &msg) _NOEXCEPT {
 	m_wrbuf += msg;
 }
 
-//for testing only
-std::string TCP_IPv4::ASocket::rdbuf() const _NOEXCEPT {
+bool TCP_IPv4::ASocket::connected() const _NOEXCEPT {
+	return (!(m_evFlags & EPOLLHUP));
+}
+
+const std::string &TCP_IPv4::ASocket::data() const _NOEXCEPT {
 	return m_rdbuf;
+}
+
+const std::string &TCP_IPv4::ASocket::host() const _NOEXCEPT {
+	return m_host;
+}
+
+const std::string &TCP_IPv4::ASocket::serv() const _NOEXCEPT {
+	return m_serv;
 }

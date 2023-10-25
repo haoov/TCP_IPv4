@@ -5,9 +5,9 @@
 /*------------------------------------*/
 
 TCP_IPv4::Server::Server(std::string name) : m_name(name), m_state(DOWN) {
-	#ifdef VERBOSE
-	std::cout << "server " << m_name << " created" << std::endl;
-	#endif
+	m_logFile.exceptions(std::ios_base::failbit | std::ios_base::badbit);
+	m_logFile.open("server_log", std::ios_base::out |std::ios_base::trunc);
+	m_logFile << "server " << m_name << " created" << std::endl;
 }
 
 TCP_IPv4::Server::Server(const Server &other) {
@@ -17,6 +17,7 @@ TCP_IPv4::Server::Server(const Server &other) {
 TCP_IPv4::Server::~Server() {
 	for (size_t i = 0; i < m_aSockets.size(); ++i)
 		delete m_aSockets[i];
+	m_logFile.close();
 }
 
 /*------------------------------------*/
@@ -59,9 +60,8 @@ void TCP_IPv4::Server::start(const char *port) {
 
 TCP_IPv4::ASocket *TCP_IPv4::Server::newConnection() {
 	TCP_IPv4::ASocket *newASocket = m_pSocket.accept();
-	#ifdef VERBOSE
-	std::cout << "new connexion on socket " << newASocket->fd() << std::endl;
-	#endif
+	m_logFile << newASocket->host() << " connected on socket " << newASocket->fd() << std::endl;
+	newASocket->setNonBlock();
 	m_aSockets.insert(m_aSockets.end(), newASocket);
 	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
 	return newASocket;
@@ -89,16 +89,14 @@ bool TCP_IPv4::Server::isdown() const _NOEXCEPT {
 
 void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 	m_state = newState;
-	#ifdef VERBOSE
-	std::cout << "server " << m_name;
+	m_logFile << "server " << m_name;
 	if (this->isup())
-		std::cout << " is up";
+		m_logFile << " is up";
 	if (this->isdown())
-		std::cout << " is down";
+		m_logFile << " is down";
 	if (this->isrunning())
-		std::cout << " is running";
-	std::cout << std::endl;
-	#endif
+		m_logFile << " is running";
+	m_logFile << std::endl;
 }
 
 /*------------------------------------*/
@@ -106,3 +104,22 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 /*------------------------------------*/
 
 TCP_IPv4::Server::Failure::Failure(std::string what) : TCP_IPv4::Error(what) {}
+
+//for testing only
+void TCP_IPv4::Server::runTest() {
+	m_socEvent.wait();
+	if (this->pendingConnection()) {
+		TCP_IPv4::ASocket *newASocket = this->newConnection();
+		std::string msg(":" + m_name + " NOTICE Connection established\n");
+		newASocket->write(msg);
+		newASocket->send();
+	}
+	for (size_t i = 0; i < m_aSockets.size(); ++i) {
+		if (!m_aSockets[i]->connected())
+			m_logFile << m_aSockets[i]->host() << " closed the connection" << std::endl;
+		if (m_aSockets[i]->isReadable()) {
+			m_aSockets[i]->receive();
+			std::cout << m_aSockets[i]->data();
+		}
+	}
+}

@@ -34,12 +34,8 @@ void TCP_IPv4::SocEvent::wait() {
 	for (int i = 0; i < m_eventNb; ++i) {
 		int fd = m_events[i].data.fd;
 		int events = m_events[i].events;
-		if (events & EPOLLIN) {
+		if (events & EPOLLIN)
 			m_sockets[fd]->m_evFlags |= EPOLLIN;
-			#ifdef VERBOSE
-			std::cout << "socketfd " << fd << " is now readable" << std::endl;
-			#endif
-		}
 		if (events & EPOLLOUT)
 			m_sockets[fd]->m_evFlags |= EPOLLOUT;
 		if (events & EPOLLHUP)

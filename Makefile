@@ -27,11 +27,6 @@ DEPS		=	$(patsubst $(SRCDIR)/%,$(DEPDIR)/%,$(SRCS:.cpp=.d))
 #------------------------------------#
 all : $(TARGET)
 
-verbose : modflags all
-
-modflags :
-	$(eval CFLAGS = $(CFLAGS) -DVERBOSE)
-
 $(TARGET) : $(OBJS)
 	@ar -src $@ $^
 	@echo Linking $@

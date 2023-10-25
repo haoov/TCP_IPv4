@@ -5,6 +5,7 @@
 #include "Socket.hpp"
 #include "SocEvent.hpp"
 #include <errno.h>
+#include <netdb.h>
 
 namespace TCP_IPv4 {
 
@@ -64,8 +65,13 @@ namespace TCP_IPv4 {
 			//write the msg to m_wrbuf
 			void write(std::string &) _NOEXCEPT;
 
-			//for testing only
-			std::string rdbuf() const _NOEXCEPT;
+			bool connected() const _NOEXCEPT;
+
+			const std::string &data() const _NOEXCEPT;
+
+			const std::string &host() const _NOEXCEPT;
+
+			const std::string &serv() const _NOEXCEPT;
 
 		private :
 			//reading buffer
@@ -76,6 +82,12 @@ namespace TCP_IPv4 {
 
 			//max reading size
 			static const size_t m_rdsize = 1024;
+
+			//host name
+			std::string m_host;
+
+			//service number
+			std::string m_serv;
 	};
 }
 

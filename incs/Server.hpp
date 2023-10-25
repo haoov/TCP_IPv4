@@ -8,6 +8,8 @@
 #include "ASocket.hpp"
 #include "SocEvent.hpp"
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 typedef std::vector<TCP_IPv4::ASocket *> vec_ASocket;
 
@@ -60,18 +62,16 @@ namespace TCP_IPv4 {
 			//return true if the server is down
 			bool isdown() const _NOEXCEPT;
 
+			//for testing only
+			void runTest();
+
 		protected :
 			std::string m_name;
 			int m_state;
 			PSocket m_pSocket;
 			vec_ASocket m_aSockets;
 			SocEvent m_socEvent;
-
-			/**
-			 * @brief set the server's current state to the givent value 
-			 * (see defines.h) If in VERBOSE mode print the state 
-			 * to standard output
-			*/
+			std::ofstream m_logFile;
 			void setState(int) _NOEXCEPT;
 
 		public :
