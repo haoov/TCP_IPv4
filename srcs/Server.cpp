@@ -110,6 +110,7 @@ void TCP_IPv4::Server::runTest() {
 	m_socEvent.wait();
 	if (this->pendingConnection()) {
 		TCP_IPv4::ASocket *newASocket = this->newConnection();
+		newASocket->write("001 : Welcome\n");
 		newASocket->write("375 :- Test\n");
 		newASocket->write("372 :- Hello\n");
 		newASocket->write("376 : End of /MOTD command\n");
