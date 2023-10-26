@@ -10,6 +10,8 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <ctime>
+#include <iomanip>
 
 typedef std::vector<TCP_IPv4::ASocket *> vec_ASocket;
 
@@ -62,11 +64,14 @@ namespace TCP_IPv4 {
 			//return true if the server is down
 			bool isdown() const _NOEXCEPT;
 
+			void log(int, int = -1) _NOEXCEPT;
+
 			//for testing only
 			void runTest();
 
 		protected :
 			std::string m_name;
+			std::string m_port;
 			int m_state;
 			PSocket m_pSocket;
 			vec_ASocket m_aSockets;

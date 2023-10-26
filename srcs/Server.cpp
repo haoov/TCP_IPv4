@@ -6,8 +6,8 @@
 
 TCP_IPv4::Server::Server(std::string name) : m_name(name), m_state(DOWN) {
 	m_logFile.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-	m_logFile.open("server_log", std::ios_base::out |std::ios_base::trunc);
-	m_logFile << "server " << m_name << " created" << std::endl << std::endl;
+	m_logFile.open("server.log", std::ios_base::out |std::ios_base::trunc);
+	this->log(CREATE);
 }
 
 TCP_IPv4::Server::Server(const Server &other) {
@@ -36,6 +36,7 @@ TCP_IPv4::Server &TCP_IPv4::Server::operator=(const Server &other) {
 
 void TCP_IPv4::Server::start(const char *port) {
 	if (this->isdown()) {
+		m_port = port;
 		struct addrinfo hint, *res;
 		::memset(&hint, 0, sizeof(hint));
 		hint.ai_family = AF_INET;
@@ -60,10 +61,10 @@ void TCP_IPv4::Server::start(const char *port) {
 
 TCP_IPv4::ASocket *TCP_IPv4::Server::newConnection() {
 	TCP_IPv4::ASocket *newASocket = m_pSocket.accept();
-	m_logFile << newASocket->host() << " connected on socket " << newASocket->fd() << std::endl << std::endl;
 	newASocket->setNonBlock();
 	m_aSockets.insert(m_aSockets.end(), newASocket);
 	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
+	this->log(CONNECTION);
 	return newASocket;
 }
 
@@ -83,20 +84,61 @@ bool TCP_IPv4::Server::isdown() const _NOEXCEPT {
 	return (m_state == DOWN);
 }
 
+void TCP_IPv4::Server::log(int mode, int socIndex) _NOEXCEPT {
+	time_t rawTime;
+	struct tm *localTime;
+	::time(&rawTime);
+	localTime = ::localtime(&rawTime);
+	m_logFile	<< "[" << std::setfill('0') << std::setw(2) << localTime->tm_mday
+				<< "-" << std::setfill('0') << std::setw(2) << localTime->tm_mon
+				<< "-" << std::setfill('0') << std::setw(4) << localTime->tm_year
+				<< " at "
+				<< std::setfill('0') << std::setw(2) << localTime->tm_hour
+				<< ":" << std::setfill('0') << std::setw(2) << localTime->tm_min
+				<< ":" << std::setfill('0') << std::setw(2) << localTime->tm_sec
+				<< "] ";
+	switch (mode) {
+		case CREATE :
+			m_logFile << "server " << m_name << " CREATED" << std::endl;
+			break;
+		case STATE :
+			m_logFile << "server " << m_name << " ";
+			switch (m_state) {
+				case UP :
+					m_logFile	<< "UP" << std::endl
+								<< "TCP port: " << m_port;
+					break;
+				case RUNNING :
+					m_logFile << "RUNNING";
+					break;
+				case DOWN :
+					m_logFile << "DOWN";
+				default :
+					break;
+			}
+			m_logFile << std::endl;
+			break;
+		case CONNECTION :
+			m_logFile << m_aSockets.back()->host() << " CONNECTED" << std::endl;
+			break;
+		case COMMAND :
+			if (socIndex < 0)
+				break;
+			m_logFile	<< m_aSockets[socIndex]->host() << " COMMAND:" << std::endl
+						<< m_aSockets[socIndex]->data() << std::endl;
+			break;
+		default :
+			break;
+	}
+}
+
 /*------------------------------------*/
 /*           Private Methods          */
 /*------------------------------------*/
 
 void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 	m_state = newState;
-	m_logFile << "server " << m_name;
-	if (this->isup())
-		m_logFile << " is up";
-	if (this->isdown())
-		m_logFile << " is down";
-	if (this->isrunning())
-		m_logFile << " is running";
-	m_logFile << std::endl << std::endl;
+	this->log(STATE);
 }
 
 /*------------------------------------*/
@@ -105,13 +147,16 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 
 TCP_IPv4::Server::Failure::Failure(std::string what) : TCP_IPv4::Error(what) {}
 
-//for testing only
+/*------------------------------------*/
+/*               Testing              */
+/*------------------------------------*/
+
 void TCP_IPv4::Server::runTest() {
 	m_socEvent.wait();
 	if (this->pendingConnection()) {
 		TCP_IPv4::ASocket *newASocket = this->newConnection();
-		newASocket->write("001 : Welcome\n");
-		newASocket->write("375 :- Test\n");
+		newASocket->write(":" + m_name + " 001 rsabbah :Welcome to the irc server test\n");
+		newASocket->write("375");
 		newASocket->write("372 :- Hello\n");
 		newASocket->write("376 : End of /MOTD command\n");
 		newASocket->send();
@@ -122,8 +167,7 @@ void TCP_IPv4::Server::runTest() {
 		if (m_aSockets[i]->isReadable()) {
 			m_aSockets[i]->receive();
 			if (!m_aSockets[i]->data().empty()) {
-				m_logFile	<< "command received: " << std::endl
-							<< m_aSockets[i]->data() << std::endl;
+				this->log(COMMAND, i);
 			}
 		}
 	}

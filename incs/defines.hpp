@@ -18,4 +18,11 @@ enum socketType {
 	PASSIVE
 };
 
+enum logMode {
+	CREATE,
+	STATE,
+	CONNECTION,
+	COMMAND
+};
+
 #endif //DEFINES_HPP
