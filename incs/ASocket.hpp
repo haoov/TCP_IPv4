@@ -63,7 +63,7 @@ namespace TCP_IPv4 {
 			int receive(int = 0);
 
 			//write the msg to m_wrbuf
-			void write(std::string &) _NOEXCEPT;
+			void write(std::string) _NOEXCEPT;
 
 			bool connected() const _NOEXCEPT;
 

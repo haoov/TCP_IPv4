@@ -7,7 +7,7 @@
 TCP_IPv4::Server::Server(std::string name) : m_name(name), m_state(DOWN) {
 	m_logFile.exceptions(std::ios_base::failbit | std::ios_base::badbit);
 	m_logFile.open("server_log", std::ios_base::out |std::ios_base::trunc);
-	m_logFile << "server " << m_name << " created" << std::endl;
+	m_logFile << "server " << m_name << " created" << std::endl << std::endl;
 }
 
 TCP_IPv4::Server::Server(const Server &other) {
@@ -60,7 +60,7 @@ void TCP_IPv4::Server::start(const char *port) {
 
 TCP_IPv4::ASocket *TCP_IPv4::Server::newConnection() {
 	TCP_IPv4::ASocket *newASocket = m_pSocket.accept();
-	m_logFile << newASocket->host() << " connected on socket " << newASocket->fd() << std::endl;
+	m_logFile << newASocket->host() << " connected on socket " << newASocket->fd() << std::endl << std::endl;
 	newASocket->setNonBlock();
 	m_aSockets.insert(m_aSockets.end(), newASocket);
 	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
@@ -96,7 +96,7 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 		m_logFile << " is down";
 	if (this->isrunning())
 		m_logFile << " is running";
-	m_logFile << std::endl;
+	m_logFile << std::endl << std::endl;
 }
 
 /*------------------------------------*/
@@ -110,8 +110,9 @@ void TCP_IPv4::Server::runTest() {
 	m_socEvent.wait();
 	if (this->pendingConnection()) {
 		TCP_IPv4::ASocket *newASocket = this->newConnection();
-		std::string msg(":" + m_name + " NOTICE Connection established\n");
-		newASocket->write(msg);
+		newASocket->write("375 :- Test\n");
+		newASocket->write("372 :- Hello\n");
+		newASocket->write("376 : End of /MOTD command\n");
 		newASocket->send();
 	}
 	for (size_t i = 0; i < m_aSockets.size(); ++i) {
@@ -119,7 +120,10 @@ void TCP_IPv4::Server::runTest() {
 			m_logFile << m_aSockets[i]->host() << " closed the connection" << std::endl;
 		if (m_aSockets[i]->isReadable()) {
 			m_aSockets[i]->receive();
-			std::cout << m_aSockets[i]->data();
+			if (!m_aSockets[i]->data().empty()) {
+				m_logFile	<< "command received: " << std::endl
+							<< m_aSockets[i]->data() << std::endl;
+			}
 		}
 	}
 }

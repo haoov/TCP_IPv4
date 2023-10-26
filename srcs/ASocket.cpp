@@ -83,7 +83,7 @@ int TCP_IPv4::ASocket::receive(int flags) {
 	return ret;
 }
 
-void TCP_IPv4::ASocket::write(std::string &msg) _NOEXCEPT {
+void TCP_IPv4::ASocket::write(std::string msg) _NOEXCEPT {
 	m_wrbuf += msg;
 }
 
