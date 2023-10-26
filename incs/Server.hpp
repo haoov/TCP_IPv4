@@ -64,7 +64,7 @@ namespace TCP_IPv4 {
 			//return true if the server is down
 			bool isdown() const _NOEXCEPT;
 
-			void log(int, int = -1) _NOEXCEPT;
+			std::ofstream &log() _NOEXCEPT;
 
 			//for testing only
 			void runTest();
@@ -79,15 +79,6 @@ namespace TCP_IPv4 {
 			std::ofstream m_logFile;
 			void setState(int) _NOEXCEPT;
 
-		public :
-			/*------------------------------------*/
-			/*              Exception             */
-			/*------------------------------------*/
-
-			class Failure : public TCP_IPv4::Error {
-				public :
-					Failure(std::string);
-			};
 	};
 }
 

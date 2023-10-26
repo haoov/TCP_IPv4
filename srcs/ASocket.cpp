@@ -46,9 +46,9 @@ TCP_IPv4::ASocket &TCP_IPv4::ASocket::operator=(const ASocket &other) {
 int TCP_IPv4::ASocket::send() {
 	int nb;
 	if (!this->isWriteable())
-		throw TCP_IPv4::Socket::Failure("socket is not writeable");
+		throw TCP_IPv4::Socket::Failure(ERR_NOTWRITEABLE);
 	if (m_evFlags & EPOLLHUP)
-		throw TCP_IPv4::Socket::Failure("connexion is down");
+		throw TCP_IPv4::Socket::Failure(ERR_CONDOWN);
 	if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
 		if (errno != EAGAIN)
 			throw TCP_IPv4::Error("send");
@@ -60,10 +60,11 @@ int TCP_IPv4::ASocket::send() {
 
 int TCP_IPv4::ASocket::receive(int flags) {
 	if (!this->isReadable())
-		throw TCP_IPv4::Socket::Failure("socket is not readable");
+		throw TCP_IPv4::Socket::Failure(ERR_NOTREADABLE);
 	if (m_evFlags & EPOLLHUP)
-		throw TCP_IPv4::Socket::Failure("connexion is down");
-	m_rdbuf.clear();
+		throw TCP_IPv4::Socket::Failure(ERR_CONDOWN);
+	if (m_rdbuf.find_first_of("\n\r") != std::string::npos)
+		m_rdbuf.clear();
 	int nb;
 	int ret = 0;
 	char buf[m_rdsize + 1];
@@ -87,12 +88,15 @@ void TCP_IPv4::ASocket::write(std::string msg) _NOEXCEPT {
 	m_wrbuf += msg;
 }
 
-bool TCP_IPv4::ASocket::connected() const _NOEXCEPT {
-	return (!(m_evFlags & EPOLLHUP));
-}
-
-const std::string &TCP_IPv4::ASocket::data() const _NOEXCEPT {
-	return m_rdbuf;
+const std::string TCP_IPv4::ASocket::extractLine() _NOEXCEPT {
+	size_t pos;
+	std::string line;
+	pos = m_rdbuf.find_first_of("\n\r");
+	if (pos != std::string::npos) {
+		line = m_rdbuf.substr(0, pos);
+		m_rdbuf.erase(0, pos);
+	}
+	return line;
 }
 
 const std::string &TCP_IPv4::ASocket::host() const _NOEXCEPT {

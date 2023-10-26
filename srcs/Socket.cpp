@@ -21,7 +21,6 @@ TCP_IPv4::Socket &TCP_IPv4::Socket::operator=(const Socket &other) {
 	m_fd = other.m_fd;
 	m_type = other.m_type;
 	m_addr = other.m_addr;
-	m_flags = other.m_flags;
 	m_evFlags = other.m_evFlags;
 	return *this;
 }
@@ -40,10 +39,7 @@ int TCP_IPv4::Socket::fd() const _NOEXCEPT {
 }
 
 void TCP_IPv4::Socket::setNonBlock() {
-	if ((m_flags = fcntl(m_fd, F_GETFL)) == -1)
-		throw TCP_IPv4::Error("fcntl");
-	m_flags |= O_NONBLOCK;
-	if (fcntl(m_fd, F_SETFL, m_flags) == -1)
+	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw TCP_IPv4::Error("fcntl");
 }
 
