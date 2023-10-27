@@ -43,7 +43,7 @@ namespace TCP_IPv4 {
 			socketMap m_sockets;
 
 			//array of struct representing events that occured after a call to wait
-			struct epoll_event m_events[10];
+			struct epoll_event *m_events;
 
 			int m_eventNb;
 			static const int m_maxEvents = 10;
