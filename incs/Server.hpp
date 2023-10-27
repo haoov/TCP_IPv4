@@ -52,6 +52,8 @@ namespace TCP_IPv4 {
 			//accept a new connection and add it to socEvent handler
 			ASocket *newConnection();
 
+			void connectionClosed(ASocket *);
+
 			//return true if the server can accept a new connection
 			bool pendingConnection() const _NOEXCEPT;
 

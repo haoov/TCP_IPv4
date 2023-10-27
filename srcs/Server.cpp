@@ -6,8 +6,8 @@
 
 TCP_IPv4::Server::Server(std::string name) : m_name(name), m_state(DOWN) {
 	m_logFile.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-	m_logFile.open("server.log", std::ios_base::out |std::ios_base::trunc);
-	this->log() << "server " << m_name << " CREATED" << std::endl;
+	m_logFile.open("server.log", std::ios_base::out |std::ios_base::app);
+	this->log() << "server " << m_name << " created" << std::endl;
 }
 
 TCP_IPv4::Server::Server(const Server &other) {
@@ -64,8 +64,20 @@ TCP_IPv4::ASocket *TCP_IPv4::Server::newConnection() {
 	newASocket->setNonBlock();
 	m_aSockets.insert(m_aSockets.end(), newASocket);
 	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
-	this->log() << newASocket->host() << " CONNECTED" << std::endl;
+	this->log()	<< "new connection to " << "[" << newASocket->host()
+				<< ":" << newASocket->serv() << "]" << std::endl;
 	return newASocket;
+}
+
+void TCP_IPv4::Server::connectionClosed(ASocket *socket) {
+	std::vector<ASocket *>::iterator it;
+	for (it = m_aSockets.begin(); it != m_aSockets.end(); ++it) {
+		if (*it == socket) {
+			delete *it;
+			m_aSockets.erase(it);
+			break;
+		}
+	}
 }
 
 bool TCP_IPv4::Server::pendingConnection() const _NOEXCEPT {
@@ -109,13 +121,13 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 	switch (m_state)
 	{
 	case UP :
-		this->log() << "server " << m_name << " UP" << std::endl;
+		this->log() << "server " << m_name << " up" << std::endl;
 		break;
 	case RUNNING :
-		this->log() << "server " << m_name << " RUNNING" << std::endl;
+		this->log() << "server " << m_name << " running" << std::endl;
 		break;
 	case DOWN :
-		this->log() << "server " << m_name << " DOWN" << std::endl;
+		this->log() << "server " << m_name << " down" << std::endl;
 	default:
 		break;
 	}
@@ -130,19 +142,14 @@ void TCP_IPv4::Server::runTest() {
 	if (this->pendingConnection()) {
 		TCP_IPv4::ASocket *newASocket = this->newConnection();
 		newASocket->write(":" + m_name + " 001 rsabbah :Welcome to the irc server test\n");
-		newASocket->write("375");
-		newASocket->write("372 :Hello\n");
-		newASocket->write("376 :End of /MOTD command\n");
+		newASocket->write(":" + m_name + " 375");
+		newASocket->write(":" + m_name + " 372 :-Hello\n");
+		newASocket->write(":" + m_name + " 376 :End of /MOTD command\n");
 		newASocket->send();
 	}
 	for (size_t i = 0; i < m_aSockets.size(); ++i) {
 		if (m_aSockets[i]->isReadable()) {
 			m_aSockets[i]->receive();
-			std::string buf;
-			while (m_aSockets[i]->pendingData()) {
-				if (m_aSockets[i]->extractData(buf, CRLF))
-					this->log() << m_aSockets[i]->host() << " COMMAND:\n" << buf << std::endl;
-			}
 		}
 	}
 }
