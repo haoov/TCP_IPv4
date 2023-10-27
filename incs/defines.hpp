@@ -25,7 +25,6 @@ enum logMode {
 	COMMAND
 };
 
-#define ERR_CONDOWN			"connexion is down"
 #define ERR_NOTWRITEABLE	"socket is not writeable"
 #define ERR_NOTREADABLE		"socket is not readable"
 

@@ -54,8 +54,6 @@ int TCP_IPv4::ASocket::send() {
 	int nb;
 	if (!this->isWriteable())
 		throw TCP_IPv4::Socket::Failure(ERR_NOTWRITEABLE);
-	if (m_evFlags & EPOLLHUP)
-		throw TCP_IPv4::Socket::Failure(ERR_CONDOWN);
 	if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
 		if (errno != EAGAIN)
 			throw TCP_IPv4::Error("send");
@@ -68,8 +66,6 @@ int TCP_IPv4::ASocket::send() {
 int TCP_IPv4::ASocket::receive(int flags) {
 	if (!this->isReadable())
 		throw TCP_IPv4::Socket::Failure(ERR_NOTREADABLE);
-	if (m_evFlags & EPOLLHUP)
-		throw TCP_IPv4::Socket::Failure(ERR_CONDOWN);
 	int nb;
 	int ret = 0;
 	char buf[m_rdsize + 1];
