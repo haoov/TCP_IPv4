@@ -8,7 +8,7 @@
 TCP_IPv4::SocEvent::SocEvent() : m_eventNb(0) {
 	if ((m_fd = ::epoll_create(1)) == -1)
 		throw TCP_IPv4::Error("epoll_create");
-	std::cout << "debug: m_events address = " << m_events << std::endl;
+	std::cout << "debug: m_events = " << m_events << std::endl;
 }
 
 TCP_IPv4::SocEvent::~SocEvent() {
