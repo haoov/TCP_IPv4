@@ -8,14 +8,13 @@
 TCP_IPv4::SocEvent::SocEvent() : m_eventNb(0) {
 	if ((m_fd = ::epoll_create(1)) == -1)
 		throw TCP_IPv4::Error("epoll_create");
-	std::cout << "debug: m_events = " << m_events << std::endl;
-	if (m_events == (epoll_event *)0x1)
-		m_events = new struct epoll_event;
+	m_events = new struct epoll_event;
 }
 
 TCP_IPv4::SocEvent::~SocEvent() {
 	if (::close(m_fd) == -1)
 		throw TCP_IPv4::Error("epoll close");
+	delete m_events;
 }
 
 /*------------------------------------*/
