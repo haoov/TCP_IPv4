@@ -23,6 +23,7 @@ namespace TCP_IPv4 {
 			/*------------------------------------*/
 
 			ASocket();
+			ASocket(struct sockaddr);
 			ASocket(int, sockaddr);
 			ASocket(const ASocket &);
 			~ASocket() _NOEXCEPT;
@@ -65,7 +66,9 @@ namespace TCP_IPv4 {
 			//write the msg to m_wrbuf
 			void write(std::string) _NOEXCEPT;
 
-			const std::string extractLine() _NOEXCEPT;
+			bool pendingData() const _NOEXCEPT;
+
+			bool extractData(std::string &, std::string = "\0") _NOEXCEPT;
 
 			const std::string &host() const _NOEXCEPT;
 

@@ -29,4 +29,6 @@ enum logMode {
 #define ERR_NOTWRITEABLE	"socket is not writeable"
 #define ERR_NOTREADABLE		"socket is not readable"
 
+#define CRLF "\r\n"
+
 #endif //DEFINES_HPP

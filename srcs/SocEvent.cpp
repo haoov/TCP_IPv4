@@ -38,7 +38,7 @@ void TCP_IPv4::SocEvent::wait() {
 			m_sockets[fd]->m_evFlags |= EPOLLIN;
 		if (events & EPOLLOUT)
 			m_sockets[fd]->m_evFlags |= EPOLLOUT;
-		if (events & EPOLLHUP)
+		if (events & EPOLLHUP && std::cout << "EPOLLHUP" << std::endl)
 			m_sockets[fd]->m_evFlags |= EPOLLHUP;
 	}
 }

@@ -138,12 +138,11 @@ void TCP_IPv4::Server::runTest() {
 	for (size_t i = 0; i < m_aSockets.size(); ++i) {
 		if (m_aSockets[i]->isReadable()) {
 			m_aSockets[i]->receive();
-			std::string line;
-			do {
-				line = m_aSockets[i]->extractLine();
-				if (!line.empty())
-					this->log() << m_aSockets[i]->host() << " COMMAND:\n" << line << std::endl;
-			} while (!line.empty());
+			std::string buf;
+			while (m_aSockets[i]->pendingData()) {
+				if (m_aSockets[i]->extractData(buf, CRLF))
+					this->log() << m_aSockets[i]->host() << " COMMAND:\n" << buf << std::endl;
+			}
 		}
 	}
 }
