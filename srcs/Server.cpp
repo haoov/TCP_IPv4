@@ -150,6 +150,13 @@ void TCP_IPv4::Server::runTest() {
 	for (size_t i = 0; i < m_aSockets.size(); ++i) {
 		if (m_aSockets[i]->isReadable()) {
 			m_aSockets[i]->receive();
+			while (m_aSockets[i]->pendingData()) {
+				std::string buf;
+				if (m_aSockets[i]->extractData(buf, CRLF))
+					this->log()	<< "command from " << "[" << m_aSockets[i]->host()
+								<< ":" << m_aSockets[i]->serv() << "]:" << std::endl
+								<< buf << std::endl;
+			}
 		}
 	}
 }
