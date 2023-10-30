@@ -12,9 +12,22 @@ TCP_IPv4::SocEvent::SocEvent() : m_eventNb(0) {
 }
 
 TCP_IPv4::SocEvent::~SocEvent() {
-	if (::close(m_fd) == -1)
-		throw TCP_IPv4::Error("epoll close");
-	delete m_events;
+	::close(m_fd);
+	if (m_events != NULL)
+		delete m_events;
+	m_events = NULL;
+}
+
+/*------------------------------------*/
+/*             Operators              */
+/*------------------------------------*/
+
+TCP_IPv4::SocEvent &TCP_IPv4::SocEvent::operator=(const SocEvent &other) {
+	m_fd = other.m_fd;
+	m_events = other.m_events;
+	m_eventNb = other.m_eventNb;
+	m_sockets = other.m_sockets;
+	return *this;
 }
 
 /*------------------------------------*/
@@ -31,8 +44,10 @@ void TCP_IPv4::SocEvent::add(Socket *socket, int events) {
 }
 
 void TCP_IPv4::SocEvent::wait() {
-	if ((m_eventNb = ::epoll_wait(m_fd, m_events, m_maxEvents, -1)) == -1)
-		throw TCP_IPv4::Error("epoll_wait");
+	if ((m_eventNb = ::epoll_wait(m_fd, m_events, m_maxEvents, -1)) == -1) {
+		if (errno != EINTR)
+			throw TCP_IPv4::Error("epoll_wait");
+	}
 	for (int i = 0; i < m_eventNb; ++i) {
 		int fd = m_events[i].data.fd;
 		int events = m_events[i].events;

@@ -25,8 +25,12 @@ TCP_IPv4::Server::~Server() {
 /*------------------------------------*/
 
 TCP_IPv4::Server &TCP_IPv4::Server::operator=(const Server &other) {
+	m_name = other.m_name;
 	m_state = other.m_state;
 	m_pSocket = other.m_pSocket;
+	m_aSockets = other.m_aSockets;
+	m_port = other.m_port;
+	m_socEvent = other.m_socEvent;
 	return *this;
 }
 
@@ -55,6 +59,7 @@ void TCP_IPv4::Server::start(const char *port) {
 		}
 		m_pSocket.listen();
 		m_socEvent.add(&m_pSocket, EPOLLIN);
+		::freeaddrinfo(res);
 		this->setState(UP);
 	}
 }
@@ -138,24 +143,27 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 /*------------------------------------*/
 
 void TCP_IPv4::Server::runTest() {
-	m_socEvent.wait();
-	if (this->pendingConnection()) {
-		TCP_IPv4::ASocket *newASocket = this->newConnection();
-		newASocket->write(":" + m_name + " 001 rsabbah :Welcome to the irc server test\n");
-		newASocket->write(":" + m_name + " 375");
-		newASocket->write(":" + m_name + " 372 :-Hello\n");
-		newASocket->write(":" + m_name + " 376 :End of /MOTD command\n");
-		newASocket->send();
-	}
-	for (size_t i = 0; i < m_aSockets.size(); ++i) {
-		if (m_aSockets[i]->isReadable()) {
-			m_aSockets[i]->receive();
-			while (m_aSockets[i]->pendingData()) {
-				std::string buf;
-				if (m_aSockets[i]->extractData(buf, CRLF))
-					this->log()	<< "command from " << "[" << m_aSockets[i]->host()
-								<< ":" << m_aSockets[i]->serv() << "]:" << std::endl
-								<< buf << std::endl;
+	this->setState(RUNNING);
+	while (this->isrunning()) {
+		m_socEvent.wait();
+		if (this->pendingConnection()) {
+			TCP_IPv4::ASocket *newASocket = this->newConnection();
+			newASocket->write(":" + m_name + " 001 rsabbah :Welcome to the irc server test\n");
+			newASocket->write(":" + m_name + " 375");
+			newASocket->write(":" + m_name + " 372 :-Hello\n");
+			newASocket->write(":" + m_name + " 376 :End of /MOTD command\n");
+			newASocket->send();
+		}
+		for (size_t i = 0; i < m_aSockets.size(); ++i) {
+			if (m_aSockets[i]->isReadable()) {
+				m_aSockets[i]->receive();
+				while (m_aSockets[i]->pendingData()) {
+					std::string buf;
+					if (m_aSockets[i]->extractData(buf, CRLF))
+						this->log()	<< "command from " << "[" << m_aSockets[i]->host()
+									<< ":" << m_aSockets[i]->serv() << "]:" << std::endl
+									<< buf << std::endl;
+				}
 			}
 		}
 	}
