@@ -69,9 +69,6 @@ namespace TCP_IPv4 {
 
 			std::ofstream &log() _NOEXCEPT;
 
-			//for testing only
-			void runTest();
-
 		protected :
 			std::string m_name;
 			std::string m_port;

@@ -141,34 +141,3 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 		break;
 	}
 }
-
-/*------------------------------------*/
-/*               Testing              */
-/*------------------------------------*/
-
-void TCP_IPv4::Server::runTest() {
-	this->setState(RUNNING);
-	while (this->isrunning()) {
-		m_socEvent.wait();
-		if (this->pendingConnection()) {
-			TCP_IPv4::ASocket *newASocket = this->newConnection();
-			newASocket->write(":" + m_name + " 001 rsabbah :Welcome to the irc server test\n");
-			newASocket->write(":" + m_name + " 375");
-			newASocket->write(":" + m_name + " 372 :-Hello\n");
-			newASocket->write(":" + m_name + " 376 :End of /MOTD command\n");
-			newASocket->send();
-		}
-		for (size_t i = 0; i < m_aSockets.size(); ++i) {
-			if (m_aSockets[i]->isReadable()) {
-				m_aSockets[i]->receive();
-				while (m_aSockets[i]->pendingData()) {
-					std::string buf;
-					if (m_aSockets[i]->extractData(buf, CRLF))
-						this->log()	<< "command from " << "[" << m_aSockets[i]->host()
-									<< ":" << m_aSockets[i]->serv() << "]:" << std::endl
-									<< buf << std::endl;
-				}
-			}
-		}
-	}
-}
