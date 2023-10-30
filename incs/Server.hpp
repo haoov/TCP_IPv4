@@ -1,5 +1,3 @@
-
-
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
@@ -13,12 +11,15 @@
 #include <ctime>
 #include <iomanip>
 
-typedef std::vector<TCP_IPv4::ASocket *> vec_ASocket;
+void ft_sig_handler(int signum);
 
 namespace TCP_IPv4 {
 
 	class Server {
 		public :
+			friend void ::ft_sig_handler(int);
+			typedef std::vector<ASocket *> vec_ASocket;
+
 			/*------------------------------------*/
 			/*    Constructors and destructor     */
 			/*------------------------------------*/
@@ -79,9 +80,12 @@ namespace TCP_IPv4 {
 			vec_ASocket m_aSockets;
 			SocEvent m_socEvent;
 			std::ofstream m_logFile;
+
 			void setState(int) _NOEXCEPT;
 
 	};
 }
+
+void signal_handler(TCP_IPv4::Server *server);
 
 #endif

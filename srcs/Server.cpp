@@ -7,6 +7,7 @@
 TCP_IPv4::Server::Server(std::string name) : m_name(name), m_state(DOWN) {
 	m_logFile.exceptions(std::ios_base::failbit | std::ios_base::badbit);
 	m_logFile.open("server.log", std::ios_base::out |std::ios_base::app);
+	signal_handler(this);
 	this->log() << "server " << m_name << " created" << std::endl;
 }
 
@@ -30,7 +31,6 @@ TCP_IPv4::Server &TCP_IPv4::Server::operator=(const Server &other) {
 	m_pSocket = other.m_pSocket;
 	m_aSockets = other.m_aSockets;
 	m_port = other.m_port;
-	m_socEvent = other.m_socEvent;
 	return *this;
 }
 
@@ -48,7 +48,7 @@ void TCP_IPv4::Server::start(const char *port) {
 		hint.ai_protocol = IPPROTO_TCP;
 		if (getaddrinfo(NULL, port, &hint, &res) == -1)
 			throw TCP_IPv4::Error("getaddrinfo");
-		while (res != NULL) {
+		for (; res != NULL; res = res->ai_next) {
 			try {
 				m_pSocket.bind(res->ai_addr);
 			}
@@ -57,6 +57,8 @@ void TCP_IPv4::Server::start(const char *port) {
 			}
 			break;
 		}
+		if (res == NULL)
+			throw TCP_IPv4::Error("bind: no available address");
 		m_pSocket.listen();
 		m_socEvent.add(&m_pSocket, EPOLLIN);
 		::freeaddrinfo(res);

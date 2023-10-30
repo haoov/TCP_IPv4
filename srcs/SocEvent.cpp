@@ -12,22 +12,9 @@ TCP_IPv4::SocEvent::SocEvent() : m_eventNb(0) {
 }
 
 TCP_IPv4::SocEvent::~SocEvent() {
-	::close(m_fd);
-	if (m_events != NULL)
-		delete m_events;
-	m_events = NULL;
-}
-
-/*------------------------------------*/
-/*             Operators              */
-/*------------------------------------*/
-
-TCP_IPv4::SocEvent &TCP_IPv4::SocEvent::operator=(const SocEvent &other) {
-	m_fd = other.m_fd;
-	m_events = other.m_events;
-	m_eventNb = other.m_eventNb;
-	m_sockets = other.m_sockets;
-	return *this;
+	if (::close(m_fd) == -1)
+		throw TCP_IPv4::Error("close");
+	delete m_events;
 }
 
 /*------------------------------------*/
