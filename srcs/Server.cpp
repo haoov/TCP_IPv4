@@ -8,6 +8,8 @@ TCP_IPv4::Server::Server(std::string name) : m_name(name), m_state(DOWN) {
 	m_logFile.exceptions(std::ios_base::failbit | std::ios_base::badbit);
 	m_logFile.open("server.log", std::ios_base::out |std::ios_base::app);
 	signal_handler(this);
+	time_t rawTime = time(NULL);
+	m_creationTime = ::asctime(::localtime(&rawTime));
 	this->log() << "server " << m_name << " created" << std::endl;
 }
 

@@ -80,6 +80,7 @@ namespace TCP_IPv4 {
 			vec_ASocket m_aSockets;
 			SocEvent m_socEvent;
 			std::ofstream m_logFile;
+			std::string m_creationTime;
 
 			void setState(int) _NOEXCEPT;
 
