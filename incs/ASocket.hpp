@@ -66,6 +66,8 @@ namespace TCP_IPv4 {
 			//write the msg to m_wrbuf
 			void write(std::string) _NOEXCEPT;
 
+			bool dataToSend() const _NOEXCEPT;
+
 			bool pendingData() const _NOEXCEPT;
 
 			bool extractData(std::string &, std::string = "\0") _NOEXCEPT;

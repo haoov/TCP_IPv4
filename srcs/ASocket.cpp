@@ -93,6 +93,10 @@ bool TCP_IPv4::ASocket::pendingData() const _NOEXCEPT {
 	return !m_rdbuf.empty();
 }
 
+bool TCP_IPv4::ASocket::dataToSend() const _NOEXCEPT {
+	return !m_wrbuf.empty();
+}
+
 bool TCP_IPv4::ASocket::extractData(std::string &dest, std::string sep) _NOEXCEPT {
 	size_t pos;
 	pos = m_rdbuf.find(sep);
