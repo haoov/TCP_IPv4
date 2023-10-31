@@ -43,6 +43,14 @@ void TCP_IPv4::Socket::setNonBlock() {
 		throw TCP_IPv4::Error("fcntl");
 }
 
+void TCP_IPv4::Socket::setNoLinger() {
+	struct linger linger;
+	linger.l_onoff = true;
+	linger.l_linger = 0;
+	if (::setsockopt(m_fd, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger)) == -1)
+		throw TCP_IPv4::Error("setsockopt");
+}
+
 bool TCP_IPv4::Socket::isReadable() const _NOEXCEPT {
 	return (m_evFlags & EPOLLIN);
 }

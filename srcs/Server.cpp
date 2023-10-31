@@ -61,6 +61,7 @@ void TCP_IPv4::Server::start(const char *port) {
 		}
 		if (res == NULL)
 			throw TCP_IPv4::Error("bind: no available address");
+		m_pSocket.setNoLinger();
 		m_pSocket.listen();
 		m_socEvent.add(&m_pSocket, EPOLLIN);
 		::freeaddrinfo(res);
@@ -71,6 +72,7 @@ void TCP_IPv4::Server::start(const char *port) {
 TCP_IPv4::ASocket *TCP_IPv4::Server::newConnection() {
 	TCP_IPv4::ASocket *newASocket = m_pSocket.accept();
 	newASocket->setNonBlock();
+	newASocket->setNoLinger();
 	m_aSockets.insert(m_aSockets.end(), newASocket);
 	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
 	this->log()	<< "new connection to " << "[" << newASocket->host()
@@ -139,5 +141,18 @@ void TCP_IPv4::Server::setState(int newState) _NOEXCEPT {
 		this->log() << "server " << m_name << " down" << std::endl;
 	default:
 		break;
+	}
+}
+
+//TESTING
+
+void TCP_IPv4::Server::runTest() {
+	this->setState(RUNNING);
+	while (this->isrunning()) {
+		m_socEvent.wait();
+		if (this->pendingConnection()) {
+			TCP_IPv4::ASocket *newASocket = this->newConnection();
+			static_cast<void>(newASocket);
+		}
 	}
 }

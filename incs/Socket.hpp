@@ -44,6 +44,8 @@ namespace TCP_IPv4 {
 			//set socket in nonblock mode
 			void setNonBlock();
 
+			void setNoLinger();
+
 			//close socket
 			void close();
 
