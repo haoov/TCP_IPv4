@@ -33,6 +33,8 @@ namespace TCP_IPv4 {
 			//add a socket to the poll
 			void add(Socket *, int);
 
+			void del(Socket *);
+
 			//wait for event to occur an modify the corresponding sockets
 			void wait();
 

@@ -18,7 +18,7 @@ namespace TCP_IPv4 {
 	class Server {
 		public :
 			friend void ::ft_sig_handler(int);
-			typedef std::vector<ASocket *> vec_ASocket;
+			typedef std::map<int, ASocket *> map_ASocket;
 
 			/*------------------------------------*/
 			/*    Constructors and destructor     */
@@ -53,7 +53,7 @@ namespace TCP_IPv4 {
 			//accept a new connection and add it to socEvent handler
 			ASocket *newConnection();
 
-			void connectionClosed(ASocket *);
+			void closeConnection(ASocket *);
 
 			//return true if the server can accept a new connection
 			bool pendingConnection() const _NOEXCEPT;
@@ -77,7 +77,7 @@ namespace TCP_IPv4 {
 			std::string m_port;
 			int m_state;
 			PSocket m_pSocket;
-			vec_ASocket m_aSockets;
+			map_ASocket m_aSockets;
 			SocEvent m_socEvent;
 			std::ofstream m_logFile;
 			std::string m_creationTime;

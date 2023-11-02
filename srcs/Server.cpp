@@ -73,18 +73,23 @@ TCP_IPv4::ASocket *TCP_IPv4::Server::newConnection() {
 	TCP_IPv4::ASocket *newASocket = m_pSocket.accept();
 	newASocket->setNonBlock();
 	newASocket->setNoLinger();
-	m_aSockets.insert(m_aSockets.end(), newASocket);
+	m_aSockets[newASocket->fd()] = newASocket;
 	m_socEvent.add(newASocket, EPOLLIN | EPOLLOUT | EPOLLHUP);
 	this->log()	<< "new connection to " << "[" << newASocket->host()
-				<< ":" << newASocket->serv() << "]" << std::endl;
+				<< ":" << newASocket->serv() << "]"
+				<< " on socket " << newASocket->fd() << std::endl;
 	return newASocket;
 }
 
-void TCP_IPv4::Server::connectionClosed(ASocket *socket) {
-	std::vector<ASocket *>::iterator it;
+void TCP_IPv4::Server::closeConnection(ASocket *socket) {
+	map_ASocket::iterator it;
+	this->log()	<< "closing connection to " << "[" << socket->host()
+			<< ":" << socket->serv() << "]"
+			<< " on socket " << socket->fd() << std::endl;
 	for (it = m_aSockets.begin(); it != m_aSockets.end(); ++it) {
-		if (*it == socket) {
-			delete *it;
+		if (it->second == socket) {
+			m_socEvent.del(it->second);
+			delete it->second;
 			m_aSockets.erase(it);
 			break;
 		}
@@ -155,18 +160,24 @@ void TCP_IPv4::Server::runTest() {
 			newASocket->write("Hello\n");
 			newASocket->send();
 		}
-		for (size_t i = 0; i < m_aSockets.size(); ++i) {
-			if (m_aSockets[i]->isReadable()) {
-				m_aSockets[i]->receive();
-				if (m_aSockets[i]->pendingData()) {
+		map_ASocket::iterator it;
+		for (it = m_aSockets.begin(); it != m_aSockets.end(); ++it) {
+			TCP_IPv4::ASocket *socket = it->second;
+			if (socket->isReadable()) {
+				socket->receive();
+				if (socket->pendingData()) {
 					std::string data;
-					m_aSockets[i]->extractData(data);
-					if (!data.empty()) {
-						for (size_t j = 0; j < m_aSockets.size(); ++j) {
-							if (j == i)
-								continue;
-							m_aSockets[j]->write(data);
-							m_aSockets[j]->send();
+					if (socket->extractData(data)) {
+						if (data == "QUIT\n")
+							this->closeConnection(socket);
+						else {
+							map_ASocket::iterator it2;
+							for (it2 = m_aSockets.begin(); it2 != m_aSockets.end(); ++it2) {
+								if (it == it2)
+									continue;
+								it2->second->write(data);
+								it2->second->send();
+							}
 						}
 					}
 				}
