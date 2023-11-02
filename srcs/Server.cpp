@@ -152,7 +152,25 @@ void TCP_IPv4::Server::runTest() {
 		m_socEvent.wait();
 		if (this->pendingConnection()) {
 			TCP_IPv4::ASocket *newASocket = this->newConnection();
-			static_cast<void>(newASocket);
+			newASocket->write("Hello\n");
+			newASocket->send();
+		}
+		for (size_t i = 0; i < m_aSockets.size(); ++i) {
+			if (m_aSockets[i]->isReadable()) {
+				m_aSockets[i]->receive();
+				if (m_aSockets[i]->pendingData()) {
+					std::string data;
+					m_aSockets[i]->extractData(data);
+					if (!data.empty()) {
+						for (size_t j = 0; j < m_aSockets.size(); ++j) {
+							if (j == i)
+								continue;
+							m_aSockets[j]->write(data);
+							m_aSockets[j]->send();
+						}
+					}
+				}
+			}
 		}
 	}
 }

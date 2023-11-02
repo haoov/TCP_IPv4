@@ -54,11 +54,19 @@ int TCP_IPv4::ASocket::send() {
 	int nb;
 	if (!this->isWriteable())
 		throw TCP_IPv4::Socket::Failure(ERR_NOTWRITEABLE);
-	if ((nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0)) == -1) {
-		if (errno != EAGAIN)
-			throw TCP_IPv4::Error("send");
+	do {
+		nb = ::send(m_fd, m_wrbuf.c_str(), m_wrbuf.size(), 0);
+		if (nb == -1) {
+			if (errno != EAGAIN)
+				throw TCP_IPv4::Error("send");
+		}
+		else
+			m_wrbuf.erase(0, nb);
+	} while (nb > 0);
+	if (errno == EAGAIN) {
+		m_evFlags &= ~EPOLLOUT;
+		errno = 0;
 	}
-	m_evFlags &= ~EPOLLOUT;
 	m_wrbuf.clear();
 	return nb;
 }
@@ -81,7 +89,10 @@ int TCP_IPv4::ASocket::receive(int flags) {
 			ret += nb;
 		}
 	} while (nb > 0);
-	m_evFlags &= ~EPOLLIN;
+	if (errno == EAGAIN) {
+		m_evFlags &= ~EPOLLIN;
+		errno = 0;
+	}
 	return ret;
 }
 
@@ -99,6 +110,11 @@ bool TCP_IPv4::ASocket::dataToSend() const _NOEXCEPT {
 
 bool TCP_IPv4::ASocket::extractData(std::string &dest, std::string sep) _NOEXCEPT {
 	size_t pos;
+	if (sep.empty()) {
+		dest = m_rdbuf;
+		m_rdbuf.clear();
+		return true;
+	}
 	pos = m_rdbuf.find(sep);
 	if (pos != std::string::npos) {
 		dest = m_rdbuf.substr(0, pos);
