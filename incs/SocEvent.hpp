@@ -48,7 +48,7 @@ namespace TCP_IPv4 {
 			struct epoll_event *m_events;
 
 			int m_eventNb;
-			static const int m_maxEvents = 10;
+			static const int m_maxEvents = 1;
 	};
 }
 
