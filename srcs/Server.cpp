@@ -50,9 +50,10 @@ void TCP_IPv4::Server::start(const char *port) {
 		hint.ai_protocol = IPPROTO_TCP;
 		if (getaddrinfo(NULL, port, &hint, &res) == -1)
 			throw TCP_IPv4::Error("getaddrinfo");
-		for (; res != NULL; res = res->ai_next) {
+		struct addrinfo *tmp = res;
+		for (; tmp != NULL; tmp = tmp->ai_next) {
 			try {
-				m_pSocket.bind(res->ai_addr);
+				m_pSocket.bind(tmp->ai_addr);
 			}
 			catch (TCP_IPv4::Error &e) {
 				continue;
@@ -60,7 +61,7 @@ void TCP_IPv4::Server::start(const char *port) {
 			break;
 		}
 		::freeaddrinfo(res);
-		if (res == NULL)
+		if (tmp == NULL)
 			throw TCP_IPv4::Error("bind: no available address");
 		m_pSocket.setNoLinger();
 		m_pSocket.listen();
